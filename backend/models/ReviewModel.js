@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const ReviewSchema = new mongoose.Schema({
     reviewId: String,
     clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client' },

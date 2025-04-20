@@ -1,18 +1,27 @@
 
+const mongoose = require('mongoose');
 const JobPostSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  budget: Number,
-  deadline: Date,
-  status: {
-    type: String,
-    enum: ['open', 'assigned', 'conflict', 'cancelled', 'completed'],
-    default: 'open'
-  },  clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client' },
-  category: String,
-  milestones: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Milestone' }],
-  bids: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Proposal' }]
-});
+    title: String,
+    description: String,
+    budget: Number,
+    deadline: Date,
+    status: {
+      type: String,
+      enum: ['open', 'assigned', 'conflict', 'cancelled', 'completed'],
+      default: 'open'
+    },
+    clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client' },
+    category: String,
+    isMilestoneBased: { type: Boolean, default: false },
+  
+  
+    payment: { type: mongoose.Schema.Types.ObjectId, ref: 'Payment' },
+  
+    milestones: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Milestone' }],
+  
+    bids: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Proposal' }]
+  });
+  
 const JobPost = mongoose.model('JobPost', JobPostSchema);
 
 const ProposalSchema = new mongoose.Schema({

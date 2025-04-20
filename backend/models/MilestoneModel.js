@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const MilestoneSchema = new mongoose.Schema({
     milestoneId: String,
     jobId: { type: mongoose.Schema.Types.ObjectId, ref: 'JobPost' },

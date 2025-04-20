@@ -1,4 +1,4 @@
-// models/Earning.js
+const mongoose = require('mongoose');
 const EarningSchema = new mongoose.Schema({
     earningId: String,
     freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer' },

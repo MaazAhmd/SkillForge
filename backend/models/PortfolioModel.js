@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const PortfolioItemSchema = new mongoose.Schema({
     title: String,
     description: String,
