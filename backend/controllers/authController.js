@@ -1,35 +1,103 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { registerUser,loginUser } = require('../database/interactDb');
-require('dotenv').config();
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const { asyncHandler } = require("../utils/asyncHandler");
+const { ApiError } = require("../utils/apiError");
+require("dotenv").config();
+const { User, Freelancer, Client } = require("../models/UserModel");
+const { ApiResponse } = require("../utils/ApiResponse");
 
-const signup = async (req, res) => {
-  const { email, password, role } = req.body;
-  try {
-    if (password.length < 6) {
-      throw new Error('Password must be at least 6 characters long');
+const signup = asyncHandler(async (req, res) => {
+    if (!req.body) {
+        throw new ApiError(400, "Request body is required");
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await registerUser({ email, password: hashedPassword, role });
 
-    const token = jwt.sign({ id: user.id,
-       email, role }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
+    const { name, email, password, role } = req.body;
+
+    if (
+        [name, email, password, role].some(
+            (field) => field === undefined || field.trim() === ""
+        )
+    ) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    if (password.length < 8) {
+        throw new ApiError(400, "Password must be at least 8 characters long");
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        throw new ApiError(409, "User already exists with this email");
+    }
+
+    const newUser = await User.create({
+        name,
+        email: email.toLowerCase(),
+        password,
+        role,
     });
 
-    res.status(201).json({ user, token });
-  } catch (error) {
-    console.error('Signup Error:', error);
-    res.status(400).json({ message: error.message });  }
-};
-const login = async (req, res) => {
-  try {
-    const user = await loginUser(req.body);
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.status(200).json({ user, token });
-  } catch (err) {
-    const status = err.message === 'User not found' || err.message === 'Invalid credentials' ? 400 : 500;
-    res.status(status).json({ message: err.message });
-  }
-};
-module.exports = { signup,login };
+    if (role === "freelancer") {
+        const freelancer = new Freelancer({ user: newUser._id });
+        await freelancer.save();
+    } else if (role === "client") {
+        const client = new Client({ user: newUser._id });
+        await client.save();
+    }
+
+    const createdUser = await User.findById(newUser._id);
+
+    const token = jwt.sign(
+        { id: newUser._id, email, role },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: "1d",
+        }
+    );
+
+    res.status(201).json(
+        new ApiResponse(
+            201,
+            { createdUser, token },
+            "User created successfully"
+        )
+    );
+});
+
+const login = asyncHandler(async (req, res) => {
+    if (!req.body) {
+        throw new ApiError(400, "Request body is required");
+    }
+
+    const { email, password } = req.body;
+
+    if (
+        [email, password].some(
+            (field) => field === undefined || field.trim() === ""
+        )
+    ) {
+        throw new ApiError(400, "Email and password are required");
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    const token = jwt.sign(
+        { id: user._id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+    );
+
+    res.status(200).json(
+        new ApiResponse(200, { user, token }, "Login successful")
+    );
+});
+
+module.exports = { signup, login };
