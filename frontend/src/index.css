@@ -1,1 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Gabriela&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-primary:  #303ACF;
+  --color-background  : #F6FAFF;
+  --color-border:   #E2E8F0;
+  --color-darkgrey:   #E4EBF291;
+
+
+  --font-sans:      'Poppins', sans‑serif;
+  --font-serif:     'Gabriela', serif;
+}
+body {
+  background-color: var(--color-background);
+}
