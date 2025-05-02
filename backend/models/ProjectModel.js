@@ -29,16 +29,12 @@ const ProjectSchema = new mongoose.Schema(
                 "completed-reviewed",
                 "cancelled",
             ],
-            default: "submitted",
+            default: "in-process",
         },
         completionDate: Date,
         reviewId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Review",
-        },
-        paymentId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Payment",
         },
     },
     { timestamps: true }
