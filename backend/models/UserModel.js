@@ -57,6 +57,9 @@ const FreelancerSchema = new mongoose.Schema({
     proposals: [{ type: mongoose.Schema.Types.ObjectId, ref: "Proposal" }],
     ratings: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
 });
+FreelancerSchema.statics.findFreelancerByUserId = async function (userId) {
+    return this.findOne({ user: userId });
+};
 const Freelancer = mongoose.model("Freelancer", FreelancerSchema);
 
 const ClientSchema = new mongoose.Schema({
