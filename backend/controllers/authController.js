@@ -45,15 +45,11 @@ const signup = asyncHandler(async (req, res) => {
         await client.save();
     }
 
-    const createdUser = await User.findById(newUser._id);
-
-    const token = jwt.sign(
-        { id: newUser._id, email, role },
-        process.env.JWT_SECRET,
-        {
-            expiresIn: "1d",
-        }
+    const createdUser = await User.findById(newUser._id).select(
+        "-password -createdAt -updatedAt"
     );
+
+    const token = createdUser.generateAccessToken();
 
     res.status(201).json(
         new ApiResponse(
@@ -89,11 +85,8 @@ const login = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid credentials");
     }
 
-    const token = jwt.sign(
-        { id: user._id, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: "1d" }
-    );
+    const token = user.generateAccessToken();
+    user.password = undefined; // Remove password from the user object
 
     res.status(200).json(
         new ApiResponse(200, { user, token }, "Login successful")

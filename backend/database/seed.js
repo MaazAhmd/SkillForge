@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 require("../models/UserModel");
-require("../models/JobModel");
+require("../models/JobPostModel");
 require("../models/MessageModel");
 require("../models/MilestoneModel");
 require("../models/PaymentModel");
@@ -17,10 +17,7 @@ const MONGO_URI = process.env.MONGO_URI;
 console.log(MONGO_URI);
 
 mongoose
-    .connect(MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    .connect(MONGO_URI)
     .then(async () => {
         console.log("Connected to MongoDB");
 

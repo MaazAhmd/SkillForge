@@ -2,12 +2,8 @@ const mongoose = require("mongoose");
 
 const EarningSchema = new mongoose.Schema({
     freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: "Freelancer" },
-    jobId: { type: mongoose.Schema.Types.ObjectId, ref: "JobPost" },
-    milestoneId: { type: mongoose.Schema.Types.ObjectId, ref: "Milestone" },
+    projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
     amount: Number,
-    platformFee: Number,
-    netAmount: Number,
-    status: String,
     dateEarned: Date,
 });
 

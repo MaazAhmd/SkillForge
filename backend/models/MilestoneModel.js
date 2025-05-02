@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Currently not used in the application, but can be used for future reference
 const MilestoneSchema = new mongoose.Schema({
     jobId: { type: mongoose.Schema.Types.ObjectId, ref: "JobPost" },
     title: String,
