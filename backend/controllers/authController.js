@@ -64,7 +64,7 @@ const login = asyncHandler(async (req, res) => {
     if (!req.body) {
         throw new ApiError(400, "Request body is required");
     }
-
+    console.log(req.body);
     const { email, password } = req.body;
 
     if (

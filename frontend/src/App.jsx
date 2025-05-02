@@ -9,9 +9,18 @@ import Profile from "./routes/Profile";
 import { DashboardPage } from "./routes/Dashboard";
 import PostJob from "./routes/PostJob";
 import LogoutRoute from "./routes/Logout";
+import { clearError } from "./redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
 
 
 function App() {
+    const dispatch = useDispatch();
+  
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
+   
   return (
     <Router>
       <div className="font-sans">

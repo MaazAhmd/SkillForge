@@ -5,7 +5,7 @@ import { Navbar } from "./Navbar";
  const ProtectedRoute = ({ children }) => {
    const token = useSelector((state) => state.auth.token);
  
-   return token ? <div><Navbar/> {children} </div>: <Navigate to="/login" />;
+   return token ? <><Navbar/> {children} </>: <Navigate to="/login" />;
  };
  
  export default ProtectedRoute;

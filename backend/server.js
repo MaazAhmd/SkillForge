@@ -16,9 +16,12 @@ app.use(express.json());
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const jobPostRoutes = require("./routes/jobPostRoutes");
+const errorHandler = require("./middlewares/errorHandler");
 
 app.use("/api/users", authRoutes);
 app.use("/api/job-posts", jobPostRoutes);
+
+app.use(errorHandler); 
 
 const PORT = process.env.PORT || 5000;
 connectDB().then(() => {
