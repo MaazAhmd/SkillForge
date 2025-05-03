@@ -20,6 +20,7 @@ const JobPostSchema = new mongoose.Schema(
             required: true,
         },
         category: String,
+        skills: [String],        
         payment: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
         bids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Proposal" }],
     },

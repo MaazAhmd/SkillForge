@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Upload, X, Loader } from 'lucide-react';
 import TagInput from '../components/TagInput';
+import { postJob, resetJobState } from '../redux/slices/jobSlice';
+import { useDispatch, useSelector } from "react-redux";
+
 
 function PostJob() {
   const [formData, setFormData] = useState({
@@ -13,7 +16,11 @@ function PostJob() {
     previews: []
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [notification, setNotification] = useState("");
+  const [notification, setNotification] = useState(null); // use null for consistent type checking
+  const { loading, error, success } = useSelector((state) => state.job);
+
+
+  const dispatch = useDispatch();
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files || []);
@@ -36,6 +43,26 @@ function PostJob() {
     });
   };
 
+  useEffect(() => {
+    if (success) {
+      setNotification({ type: 'success', message: 'Job successfully posted!' });
+      setFormData({
+        title: '',
+        description: '',
+        skills: [],
+        budget: '',
+        deadline: '',
+        files: [],
+        previews: [],
+      });
+      dispatch(resetJobState());
+    }
+  
+    if (error) {
+      setNotification({ type: 'error', message: error });
+    }
+  }, [success, error, dispatch]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title || !formData.budget || !formData.deadline) {
@@ -48,27 +75,22 @@ function PostJob() {
 
     setIsSubmitting(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setNotification({
-        type: 'success',
-        message: 'Job successfully posted!'
+      dispatch(postJob(formData)).then((action) => {
+        if (action.meta.requestStatus === 'fulfilled') {
+          setFormData({
+            title: '',
+            description: '',
+            skills: [],
+            budget: '',
+            deadline: '',
+            files: [],
+            previews: [],
+          });
+     
+        }
       });
-      setFormData({
-        title: '',
-        description: '',
-        skills: [],
-        budget: '',
-        deadline: '',
-        files: [],
-        previews: []
-      });
+
     } catch (error) {
-      setNotification({
-        type: 'error',
-        message: 'Failed to post job. Please try again.'
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -120,9 +142,10 @@ function PostJob() {
               <div>
                 <label className="text-sm font-medium block mb-1">Skills Needed *</label>
                 <TagInput 
-                  selectedTags={(tags) => setFormData(prev => ({...prev, skills: tags}))}
-                  required
-                />
+                onChange={(tags) => setFormData(prev => ({ ...prev, skills: tags }))}
+                required
+              />
+
               </div>
 
               {/* Budget */}
