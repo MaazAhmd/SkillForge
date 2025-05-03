@@ -20,6 +20,7 @@ const JobPostSchema = new mongoose.Schema(
             required: true,
         },
         category: String,
+        skills: [String],        
         proposals: [{ type: mongoose.Schema.Types.ObjectId, ref: "Proposal" }],
     },
     { timestamps: true }

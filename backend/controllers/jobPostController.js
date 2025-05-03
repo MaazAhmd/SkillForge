@@ -48,33 +48,30 @@ const getJobPostById = asyncHandler(async (req, res) => {
         new ApiResponse(200, jobPost, "Job retrieved successfully")
     );
 });
-
-const createJobPost = asyncHandler(async (req, res) => {
-    if (!req.body) {
-        throw new ApiError(400, "Request body is required");
-    }
-    // We have the logged in user by the Token, so we dont need ClientID in body:
+  const createJobPost = asyncHandler(async (req, res) => {
     const client = await Client.findClientByUserId(req.user._id);
+    if (!client) throw new ApiError(404, "Client not found");
 
-    const { title, description, budget, deadline, category } = req.body;
+    const { title, description, budget, deadline, category, skills = [] } = req.body;
 
-    if (!title) {
-        throw new ApiError(400, "Title is required");
+    if (!title || !budget || !deadline) {
+        throw new ApiError(400, "Missing required fields");
     }
 
-    const jobPost = await JobPost.create({
+
+  const jobPost = await JobPost.create({
         title,
         description,
         budget,
         deadline,
         clientId: client._id,
         category: category?.toLowerCase(),
+        skills: skills.map(s => s.toLowerCase()),
     });
+    console.log(jobPost, "jobPost created");
 
-    res.status(201).json(
-        new ApiResponse(201, jobPost, "Job post created successfully")
-    );
-});
+    res.status(201).json(new ApiResponse(201, jobPost, "Job post created successfully"));
+    });
 
 const updateJobPost = asyncHandler(async (req, res) => {
     if (!req.body) {
