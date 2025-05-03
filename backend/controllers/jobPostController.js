@@ -26,7 +26,7 @@ const getJobPosts = asyncHandler(async (req, res) => {
     const jobPosts = await JobPost.find()
         .limit(limit)
         .sort(sortOption)
-        .populate("client", "-password -createdAt -updatedAt");
+        .populate("clientId", "-password -createdAt -updatedAt");
 
     res.status(200).json(
         new ApiResponse(200, jobPosts, "Jobs retrieved successfully")
@@ -36,7 +36,10 @@ const getJobPosts = asyncHandler(async (req, res) => {
 const getJobPostById = asyncHandler(async (req, res) => {
     const jobPostId = req.params.id;
 
-    const jobPost = await JobPost.findById(jobPostId)?.populate("client");
+    const jobPost = await JobPost.findById(jobPostId)?.populate(
+        "clientId",
+        "-password -createdAt -updatedAt"
+    );
     if (!jobPost) {
         throw new ApiError(404, "Job post not found with this ID");
     }
@@ -53,8 +56,7 @@ const createJobPost = asyncHandler(async (req, res) => {
     // We have the logged in user by the Token, so we dont need ClientID in body:
     const client = await Client.findClientByUserId(req.user._id);
 
-    const { title, description, budget, deadline, status, category, payment } =
-        req.body;
+    const { title, description, budget, deadline, category } = req.body;
 
     if (!title) {
         throw new ApiError(400, "Title is required");
@@ -65,10 +67,8 @@ const createJobPost = asyncHandler(async (req, res) => {
         description,
         budget,
         deadline,
-        status,
         clientId: client._id,
         category: category?.toLowerCase(),
-        payment,
     });
 
     res.status(201).json(
@@ -88,9 +88,12 @@ const updateJobPost = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Job post not found");
     }
 
-    const clientId = await Client.findClientByUserId(req.user._id);
+    const client = await Client.findClientByUserId(req.user._id);
 
-    if (!jobPost.clientId.equals(clientId)) {
+    console.log(`Client ID: ${client._id}`);
+    console.log(`Job Post Client ID: ${jobPost.clientId}`);
+
+    if (!jobPost.clientId.equals(client._id)) {
         throw new ApiError(
             403,
             "You are not authorized to update this job post"
@@ -122,7 +125,7 @@ const deleteJobPost = asyncHandler(async (req, res) => {
     }
 
     // Checking if the logged-in user owns this job post
-    if (!jobPost.clientId.equals(clientId)) {
+    if (!jobPost.clientId.equals(clientId._id)) {
         throw new ApiError(
             403,
             "You are not authorized to delete this job post"

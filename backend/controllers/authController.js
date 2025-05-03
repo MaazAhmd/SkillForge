@@ -5,6 +5,7 @@ const { ApiError } = require("../utils/apiError");
 require("dotenv").config();
 const { User, Freelancer, Client } = require("../models/UserModel");
 const { ApiResponse } = require("../utils/ApiResponse");
+const { Account } = require("../models/AccountModel");
 
 const signup = asyncHandler(async (req, res) => {
     if (!req.body) {
@@ -44,6 +45,8 @@ const signup = asyncHandler(async (req, res) => {
         const client = new Client({ user: newUser._id });
         await client.save();
     }
+
+    await Account.create({ userId: newUser._id, balance: 0 });
 
     const createdUser = await User.findById(newUser._id).select(
         "-password -createdAt -updatedAt"
