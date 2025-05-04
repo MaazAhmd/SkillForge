@@ -14,9 +14,9 @@ const router = express.Router();
 
 router.get("/", verifyToken, getProjects);
 router.get("/:id", verifyToken, getProjectsById);
-router.get("/:id/deliver", verifyToken, authorizeRoles('freelancer'), deliverProject);
+router.post("/:id/deliver", verifyToken, authorizeRoles('freelancer'), deliverProject);
 router.put("/:id/update-deadline", verifyToken, authorizeRoles('client'), updateDeadline);
-router.post("/:id/mark-complete", verifyToken, authorizeRoles('client'), markCompleted);
-router.delete("/:id/request-revision", verifyToken, authorizeRoles('client'), requestRevision);
+router.put("/:id/mark-complete", verifyToken, authorizeRoles('client'), markCompleted);
+router.put("/:id/request-revision", verifyToken, authorizeRoles('client'), requestRevision);
 
 module.exports = router;
