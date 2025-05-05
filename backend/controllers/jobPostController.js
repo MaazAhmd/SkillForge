@@ -6,6 +6,34 @@ require("dotenv").config();
 const { JobPost } = require("../models/JobPostModel");
 const { Client } = require("../models/UserModel");
 
+const dayjs = require("dayjs");
+const duration = require("dayjs/plugin/duration");
+const relativeTime = require("dayjs/plugin/relativeTime");
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
+
+function formatDurationFromNow(deadline) {
+    const now = dayjs();
+    const end = dayjs(deadline);
+    const diff = end.diff(now);
+
+    if (diff <= 0) return "Deadline passed";
+
+    const d = dayjs.duration(diff);
+
+    const parts = [];
+    if (d.years()) parts.push(`${d.years()} year${d.years() > 1 ? "s" : ""}`);
+    if (d.months()) parts.push(`${d.months()} month${d.months() > 1 ? "s" : ""}`);
+    if (d.days()) parts.push(`${d.days()} day${d.days() > 1 ? "s" : ""}`);
+    if (d.hours()) parts.push(`${d.hours()} hour${d.hours() > 1 ? "s" : ""}`);
+    if (d.minutes()) parts.push(`${d.minutes()} minute${d.minutes() > 1 ? "s" : ""}`);
+
+    return parts.slice(0, 3).join(" "); 
+}
+
+
+
 const getJobPosts = asyncHandler(async (req, res) => {
     let limit = 50; // Default limit
 
@@ -23,14 +51,27 @@ const getJobPosts = asyncHandler(async (req, res) => {
             ? { createdAt: 1 }
             : {};
 
-    const jobPosts = await JobPost.find()
+        const jobPosts = await JobPost.find()
         .limit(limit)
         .sort(sortOption)
-        .populate("client", "-password -createdAt -updatedAt");
-
+        .populate({
+            path: "clientId",
+            populate: { path: "user", model: "User", select: "name profilePicture" },
+        });
+    
+    const jobPostsWithDuration = jobPosts.map(job => ({
+        ...job.toObject(),
+        deadline: job.deadline?.toISOString().split("T")[0], // ← formatted date only
+        author: {
+            name: job.clientId.user.name,
+            avatar: job.clientId.user.profilePicture,
+        }
+    }));
+    console.log(jobPostsWithDuration);
     res.status(200).json(
-        new ApiResponse(200, jobPosts, "Jobs retrieved successfully")
+        new ApiResponse(200, jobPostsWithDuration, "Jobs retrieved successfully")
     );
+    
 });
 
 const getJobPostById = asyncHandler(async (req, res) => {
@@ -50,7 +91,6 @@ const getJobPostById = asyncHandler(async (req, res) => {
     if (!client) throw new ApiError(404, "Client not found");
 
     const { title, description, budget, deadline, category, skills = [] } = req.body;
-    console.log(req.body);
 
     if (!title || !budget || !deadline) {
         throw new ApiError(400, "Missing required fields");
@@ -66,7 +106,6 @@ const getJobPostById = asyncHandler(async (req, res) => {
         category: category?.toLowerCase(),
         skills: skills.map(s => s.toLowerCase()),
     });
-    console.log(jobPost, "jobPost created");
 
     res.status(201).json(new ApiResponse(201, jobPost, "Job post created successfully"));
     });

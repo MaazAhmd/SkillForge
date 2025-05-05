@@ -13,7 +13,8 @@ function PostJob() {
     budget: '',
     deadline: '',
     files: [],
-    previews: []
+    previews: [],
+    category: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState(null); // use null for consistent type checking
@@ -46,6 +47,7 @@ function PostJob() {
   useEffect(() => {
     if (success) {
       setNotification({ type: 'success', message: 'Job successfully posted!' });
+      setIsSubmitting(false);
       setFormData({
         title: '',
         description: '',
@@ -54,11 +56,14 @@ function PostJob() {
         deadline: '',
         files: [],
         previews: [],
+        category: '',
+
       });
       dispatch(resetJobState());
     }
   
     if (error) {
+      setIsSubmitting(false);
       setNotification({ type: 'error', message: error });
     }
   }, [success, error, dispatch]);
@@ -85,6 +90,8 @@ function PostJob() {
             deadline: '',
             files: [],
             previews: [],
+             category: '',
+
           });
      
         }
@@ -147,6 +154,19 @@ function PostJob() {
               />
 
               </div>
+              <div>
+              <label className="text-sm font-medium block mb-1">Category *</label>
+              <input
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                required
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-transparent"
+                placeholder="e.g. Web Development"
+              />
+            </div>
+
 
               {/* Budget */}
               <div>
