@@ -77,7 +77,10 @@ const getJobPosts = asyncHandler(async (req, res) => {
 const getJobPostById = asyncHandler(async (req, res) => {
     const jobPostId = req.params.id;
 
-    const jobPost = await JobPost.findById(jobPostId)?.populate("client");
+    const jobPost = await JobPost.findById(jobPostId)?.populate(
+        "clientId",
+        "-password -createdAt -updatedAt"
+    );
     if (!jobPost) {
         throw new ApiError(404, "Job post not found with this ID");
     }
@@ -122,9 +125,12 @@ const updateJobPost = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Job post not found");
     }
 
-    const clientId = await Client.findClientByUserId(req.user._id);
+    const client = await Client.findClientByUserId(req.user._id);
 
-    if (!jobPost.clientId.equals(clientId)) {
+    console.log(`Client ID: ${client._id}`);
+    console.log(`Job Post Client ID: ${jobPost.clientId}`);
+
+    if (!jobPost.clientId.equals(client._id)) {
         throw new ApiError(
             403,
             "You are not authorized to update this job post"
@@ -156,7 +162,7 @@ const deleteJobPost = asyncHandler(async (req, res) => {
     }
 
     // Checking if the logged-in user owns this job post
-    if (!jobPost.clientId.equals(clientId)) {
+    if (!jobPost.clientId.equals(clientId._id)) {
         throw new ApiError(
             403,
             "You are not authorized to delete this job post"

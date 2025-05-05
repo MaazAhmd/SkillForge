@@ -11,7 +11,7 @@ const JobPostSchema = new mongoose.Schema(
         deadline: Date,
         status: {
             type: String,
-            enum: ["open", "assigned", "conflict", "cancelled", "completed"],
+            enum: ["open", "assigned", "cancelled", "completed"],
             default: "open",
         },
         clientId: {
@@ -21,8 +21,7 @@ const JobPostSchema = new mongoose.Schema(
         },
         category: String,
         skills: [String],        
-        payment: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
-        bids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Proposal" }],
+        proposals: [{ type: mongoose.Schema.Types.ObjectId, ref: "Proposal" }],
     },
     { timestamps: true }
 );
