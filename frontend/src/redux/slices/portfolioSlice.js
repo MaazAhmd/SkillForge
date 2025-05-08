@@ -5,8 +5,11 @@ export const addPortfolio = createAsyncThunk(
   'portfolio/add',
   async (payload, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('/portfolio', payload);
-      return data;
+        const { data } = await axios.post('/portfolio/create', payload, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        
+        return data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
@@ -35,6 +38,7 @@ const portfolioSlice = createSlice({
         state.adding = false;
         state.addError = action.payload;
       });
+      
   }
 });
 

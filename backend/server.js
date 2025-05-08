@@ -3,6 +3,8 @@ const cors = require("cors");
 const app = express();
 require("dotenv").config();
 const connectDB = require("./database/db");
+const path    = require('path');
+
 
 app.use(
     cors({
@@ -26,6 +28,7 @@ app.use("/api/jobs", jobPostRoutes);
 app.use("/api/proposals", proposalRoutes);
 app.use("/api/projects", projectRoutes);
 app.use('/api/portfolio',portfolioRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(errorHandler);
 
