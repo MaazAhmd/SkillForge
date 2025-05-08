@@ -5,7 +5,7 @@ export const postJob = createAsyncThunk(
   'job/postJob',
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/job-posts/create', formData);
+      const response = await axios.post('/jobs/create', formData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -17,10 +17,24 @@ export const fetchJobs = createAsyncThunk(
   'job/fetchJobs',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/job-posts/get-all?sort=desc');
+      const response = await axios.get('/jobs/?sort=desc');
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+
+export const fetchCategories = createAsyncThunk(
+  'job/fetchCategories',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get('/jobs/categories');
+      const names = res.data.map(cat => cat.name);
+      return [ ...names];
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
@@ -42,6 +56,12 @@ const jobSlice = createSlice({
     jobsError: null,
     activeCategory: 'All Categories',
     searchQuery: '',
+
+
+    categories: [],
+    categoriesLoading: false,
+    categoriesError: null,
+    
   },
 
   reducers: {
@@ -110,6 +130,22 @@ const jobSlice = createSlice({
         state.jobsLoading = false;
         state.jobsError = action.payload;
       });
+
+
+      builder
+      .addCase(fetchCategories.pending, (state) => {
+        state.categoriesLoading = true;
+        state.categoriesError = null;
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.categoriesLoading = false;
+        state.categories = ['All Categories', ...action.payload];
+      })
+      .addCase(fetchCategories.rejected, (state, action) => {
+        state.categoriesLoading = false;
+        state.categoriesError = action.payload;
+      });
+
   },
 });
 

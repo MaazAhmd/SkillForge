@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Search } from 'lucide-react';
 
 import {
+  fetchCategories,
   fetchJobs,
   setCategory,
   setSearchQuery,
@@ -42,19 +43,21 @@ function Jobs() {
     searchQuery,
     loading,
     error,
+    categories
   } = useSelector((state) => state.job);
-  console.log('Jobs:', filteredJobs, activeCategory, searchQuery, loading, error);
+  console.log('Jobs:', filteredJobs, activeCategory, searchQuery, loading, error,categories);
 
-  const categories = ['All Categories', 'Software Development', 'Graphic Design', 'UI / UX Design', '3D Modelling', 'Website Design'];
 
   useEffect(() => {
     dispatch(fetchJobs());
+    dispatch(fetchCategories());
   }, [dispatch]);
 
   
   return (
     <div className="min-h-screen lg:py-5 lg:px-8 md:py-3 md:px-5">
       <CategoryTabs
+      
         categories={categories}
         activeCategory={activeCategory}
         onSelect={(cat) => dispatch(setCategory(cat))}

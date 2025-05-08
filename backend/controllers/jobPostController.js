@@ -9,6 +9,7 @@ const { Client } = require("../models/UserModel");
 const dayjs = require("dayjs");
 const duration = require("dayjs/plugin/duration");
 const relativeTime = require("dayjs/plugin/relativeTime");
+const { Category } = require("../models/CategoryModel");
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -33,10 +34,9 @@ function formatDurationFromNow(deadline) {
 }
 
 
-
 const getJobPosts = asyncHandler(async (req, res) => {
     let limit = 50; // Default limit
-
+  
     if (req.query?.limit) {
         const parsedLimit = parseInt(req.query.limit, 10);
         if (!isNaN(parsedLimit) && parsedLimit > 0) {
@@ -89,29 +89,42 @@ const getJobPostById = asyncHandler(async (req, res) => {
         new ApiResponse(200, jobPost, "Job retrieved successfully")
     );
 });
-  const createJobPost = asyncHandler(async (req, res) => {
+
+const getAllCategories = asyncHandler(async (req, res) => {
+    const categories = await Category.find().sort("name");
+    res.status(200).json(categories);
+});
+
+
+
+const createJobPost = asyncHandler(async (req, res) => {
     const client = await Client.findClientByUserId(req.user._id);
     if (!client) throw new ApiError(404, "Client not found");
 
     const { title, description, budget, deadline, category, skills = [] } = req.body;
 
-    if (!title || !budget || !deadline) {
+    if (!title || !budget || !deadline || !category) {
         throw new ApiError(400, "Missing required fields");
     }
 
+    const existingCategory = await Category.findOne({ name: category });
+    if (!existingCategory) {
+        throw new ApiError(400, "Invalid category. Choose from available options.");
+    }
 
-  const jobPost = await JobPost.create({
+    const jobPost = await JobPost.create({
         title,
         description,
         budget,
         deadline,
         clientId: client._id,
-        category: category?.toLowerCase(),
+        category: existingCategory.name,
         skills: skills.map(s => s.toLowerCase()),
     });
 
     res.status(201).json(new ApiResponse(201, jobPost, "Job post created successfully"));
-    });
+});
+
 
 const updateJobPost = asyncHandler(async (req, res) => {
     if (!req.body) {
@@ -182,4 +195,5 @@ module.exports = {
     createJobPost,
     updateJobPost,
     deleteJobPost,
+    getAllCategories
 };

@@ -12,6 +12,7 @@ import LogoutRoute from "./routes/Logout";
 import { clearError } from "./redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
+import AddPortfolio from "./routes/AddPortfolio";
 
 
 function App() {
@@ -72,6 +73,14 @@ function App() {
     element={
       <ProtectedRoute>
         <PostJob />
+      </ProtectedRoute>
+    }
+  />
+        <Route
+    path="/addportfolio"
+    element={
+      <ProtectedRoute>
+        <AddPortfolio />
       </ProtectedRoute>
     }
   />

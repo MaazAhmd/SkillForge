@@ -3,7 +3,7 @@ import { Calendar, Upload, X, Loader } from 'lucide-react';
 import TagInput from '../components/TagInput';
 import { postJob, resetJobState } from '../redux/slices/jobSlice';
 import { useDispatch, useSelector } from "react-redux";
-
+import axios from '../api/axios';
 
 function PostJob() {
   const [formData, setFormData] = useState({
@@ -17,8 +17,9 @@ function PostJob() {
     category: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [notification, setNotification] = useState(null); // use null for consistent type checking
+  const [notification, setNotification] = useState(null); 
   const { loading, error, success } = useSelector((state) => state.job);
+  const [categories, setCategories] = useState([]);
 
 
   const dispatch = useDispatch();
@@ -43,6 +44,26 @@ function PostJob() {
       return { ...prev, files: newFiles, previews: newPreviews };
     });
   };
+
+// categories
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("/jobs/categories"); 
+        console.log("Categories response:", response.data);
+        const data  = response.data;
+     
+        setCategories(data);
+        
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  
 
   useEffect(() => {
     if (success) {
@@ -156,16 +177,20 @@ function PostJob() {
               </div>
               <div>
               <label className="text-sm font-medium block mb-1">Category *</label>
-              <input
-                type="text"
+              <select
                 name="category"
                 value={formData.category}
                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                 required
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-transparent"
-                placeholder="e.g. Web Development"
-              />
+              >
+                <option value="" disabled>Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
             </div>
+
 
 
               {/* Budget */}
