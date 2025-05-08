@@ -43,6 +43,12 @@ export function Navbar() {
             >
               Dashboard
             </Link>
+            <Link 
+              to="/addportfolio" 
+              className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Portfolio
+            </Link>
           </nav>
 
           {/* Right Section */}
