@@ -1,41 +1,26 @@
+import { useEffect, useState } from "react";
+import axios from '../../api/axios';
+import ProjectCard from "./ProjectCard";
+
 export default function ProfileCards() {
-    const projects = [
-        {
-          style: 'Modern',
-          imageUrl: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=600',
-          description: 'As Uber works through a huge amount of internal management turmoil.',
-          team: [
-            'https://images.pexels.com/photos/415830/pexels-photo-415830.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415831/pexels-photo-415831.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415832/pexels-photo-415832.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415833/pexels-photo-415833.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-          ],
-        },
-        {
-          style: 'Scandinavian',
-          imageUrl: 'https://images.pexels.com/photos/2082087/pexels-photo-2082087.jpeg?auto=compress&cs=tinysrgb&w=600',
-          description: 'A minimalistic approach to interior using light tones and organic materials.',
-          team: [
-            'https://images.pexels.com/photos/415834/pexels-photo-415834.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415835/pexels-photo-415835.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415836/pexels-photo-415836.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415837/pexels-photo-415837.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-          ],
-        },
-        {
-          style: 'Minimalist',
-          imageUrl: 'https://images.pexels.com/photos/2635038/pexels-photo-2635038.jpeg?auto=compress&cs=tinysrgb&w=600',
-          description: 'Clean lines, functional layout, and maximum simplicity define this project.',
-          team: [
-            'https://images.pexels.com/photos/415834/pexels-photo-415834.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415835/pexels-photo-415835.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415836/pexels-photo-415836.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-            'https://images.pexels.com/photos/415837/pexels-photo-415837.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2',
-          ],
-        },
-      ];
-          
-    return (
+
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const { data } = await axios.get('/portfolio');
+        setProjects(data);
+        console.log(data);
+      } catch (err) {
+        console.error('Failed to load portfolios:', err);
+      }
+    };
+    load();
+  }, []);
+
+  
+  return (
       <main className=" mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Platform Settings */}
@@ -124,37 +109,12 @@ export default function ProfileCards() {
           </div>
         </div>
 
-        {/* Projects */}
         <div className="mt-8 p-6 bg-white">
           <h2 className="text-lg font-semibold mb-4">Projects</h2>
-          <p className="text-gray-500 mb-6">Architects design houses</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {projects.map(({ style, imageUrl, description, team }) => (
-        <div key={style} className="overflow-hidden">
-            <img
-            src={imageUrl}
-            alt={style}
-            className="w-full h-56 rounded-2xl object-cover"
-            />
-            <div className="p-4">
-            <p className="text-sm text-[#A0AEC0] mb-4">Project #1</p>
-            <h3 className="font-semibold mb-2">{style}</h3>
-            <p className="text-sm text-[#A0AEC0] mb-4">{description}</p>
-            <button className="text-sm border py-2 px-6 hover:bg-gray-100 rounded-2xl text-primary">VIEW ALL</button>
-            <div className="flex -space-x-2 mt-4">
-            {team.map((url, index) => (
-                <img
-                    key={index}
-                    src={url}
-                    alt="Team member"
-                    className="w-8 h-8 rounded-full border-2 border-white"
-                />
-                ))}
-            </div>
-            </div>
-        </div>
-        ))}
-
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {projects.map((proj) => (
+              <ProjectCard key={proj._id} project={proj} />
+            ))}
           </div>
         </div>
       </main>

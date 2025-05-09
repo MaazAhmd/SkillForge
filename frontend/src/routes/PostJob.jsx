@@ -141,7 +141,6 @@ function PostJob() {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Project Title */}
               <div>
                 <label className="text-sm font-medium block mb-1">Project Title *</label>
                 <input
@@ -154,7 +153,6 @@ function PostJob() {
                 />
               </div>
 
-              {/* Description */}
               <div className="md:row-span-2 md:mb-6">
                 <label className="text-sm font-medium block mb-1">Description *</label>
                 <textarea
@@ -166,10 +164,10 @@ function PostJob() {
                 />
               </div>
 
-              {/* Skills Input */}
               <div>
                 <label className="text-sm font-medium block mb-1">Skills Needed *</label>
                 <TagInput 
+                tags={formData.skills}
                 onChange={(tags) => setFormData(prev => ({ ...prev, skills: tags }))}
                 required
               />
@@ -193,7 +191,6 @@ function PostJob() {
 
 
 
-              {/* Budget */}
               <div>
                 <label className="text-sm font-medium block mb-1">Budget *</label>
                 <div className="relative">
@@ -213,7 +210,6 @@ function PostJob() {
                 </div>
               </div>
 
-              {/* Deadline */}
               <div>
                 <label className="text-sm font-medium block mb-1">Deadline *</label>
                 <div className="relative">
