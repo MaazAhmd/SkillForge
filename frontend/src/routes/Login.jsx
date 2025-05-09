@@ -11,21 +11,17 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, status, error } = useSelector((state) => state.auth);
-
-  const handleSubmit = (e) => {
+console.log(user, status, error, "user, status, error")
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
-  };
-
-
-useEffect(() => {
-  dispatch(clearError());
-}, [dispatch]);
-  useEffect(() => {
-    if (user) {
-      navigate("/");
+    try {
+      await dispatch(loginUser({ email, password })).unwrap();
+      navigate('/');
+    } catch (err) {
     }
-  }, [user]);
+  };
+  
+
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -72,12 +68,12 @@ useEffect(() => {
           </div>
 
           <button
-  type="submit"
-  className="w-full bg-primary text-white hover:brightness-90 py-2 rounded-xl hover:bg-opacity-90 transition"
-  disabled={status === "loading"}
->
-  {status === "loading" ? "Logging in..." : "LOGIN"}
-</button>
+          type="submit"
+          className="w-full bg-primary text-white hover:brightness-90 py-2 rounded-xl hover:bg-opacity-90 transition"
+          disabled={status === "loading"}
+        >
+          {status === "loading" ? "Logging in..." : "LOGIN"}
+        </button>
 
 
           <p className="text-sm text-center mt-4">

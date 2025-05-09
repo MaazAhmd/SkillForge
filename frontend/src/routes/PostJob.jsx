@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Upload, X, Loader } from 'lucide-react';
 import TagInput from '../components/TagInput';
+import { postJob, resetJobState } from '../redux/slices/jobSlice';
+import { useDispatch, useSelector } from "react-redux";
+import axios from '../api/axios';
 
 function PostJob() {
   const [formData, setFormData] = useState({
@@ -10,10 +13,16 @@ function PostJob() {
     budget: '',
     deadline: '',
     files: [],
-    previews: []
+    previews: [],
+    category: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [notification, setNotification] = useState("");
+  const [notification, setNotification] = useState(null); 
+  const { loading, error, success } = useSelector((state) => state.job);
+  const [categories, setCategories] = useState([]);
+
+
+  const dispatch = useDispatch();
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files || []);
@@ -36,6 +45,50 @@ function PostJob() {
     });
   };
 
+// categories
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("/jobs/categories"); 
+        console.log("Categories response:", response.data);
+        const data  = response.data;
+     
+        setCategories(data);
+        
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  
+
+  useEffect(() => {
+    if (success) {
+      setNotification({ type: 'success', message: 'Job successfully posted!' });
+      setIsSubmitting(false);
+      setFormData({
+        title: '',
+        description: '',
+        skills: [],
+        budget: '',
+        deadline: '',
+        files: [],
+        previews: [],
+        category: '',
+
+      });
+      dispatch(resetJobState());
+    }
+  
+    if (error) {
+      setIsSubmitting(false);
+      setNotification({ type: 'error', message: error });
+    }
+  }, [success, error, dispatch]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title || !formData.budget || !formData.deadline) {
@@ -48,27 +101,24 @@ function PostJob() {
 
     setIsSubmitting(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setNotification({
-        type: 'success',
-        message: 'Job successfully posted!'
+      dispatch(postJob(formData)).then((action) => {
+        if (action.meta.requestStatus === 'fulfilled') {
+          setFormData({
+            title: '',
+            description: '',
+            skills: [],
+            budget: '',
+            deadline: '',
+            files: [],
+            previews: [],
+             category: '',
+
+          });
+     
+        }
       });
-      setFormData({
-        title: '',
-        description: '',
-        skills: [],
-        budget: '',
-        deadline: '',
-        files: [],
-        previews: []
-      });
+
     } catch (error) {
-      setNotification({
-        type: 'error',
-        message: 'Failed to post job. Please try again.'
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -91,7 +141,6 @@ function PostJob() {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Project Title */}
               <div>
                 <label className="text-sm font-medium block mb-1">Project Title *</label>
                 <input
@@ -104,7 +153,6 @@ function PostJob() {
                 />
               </div>
 
-              {/* Description */}
               <div className="md:row-span-2 md:mb-6">
                 <label className="text-sm font-medium block mb-1">Description *</label>
                 <textarea
@@ -116,16 +164,33 @@ function PostJob() {
                 />
               </div>
 
-              {/* Skills Input */}
               <div>
                 <label className="text-sm font-medium block mb-1">Skills Needed *</label>
                 <TagInput 
-                  selectedTags={(tags) => setFormData(prev => ({...prev, skills: tags}))}
-                  required
-                />
-              </div>
+                tags={formData.skills}
+                onChange={(tags) => setFormData(prev => ({ ...prev, skills: tags }))}
+                required
+              />
 
-              {/* Budget */}
+              </div>
+              <div>
+              <label className="text-sm font-medium block mb-1">Category *</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                required
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-transparent"
+              >
+                <option value="" disabled>Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
+
+
               <div>
                 <label className="text-sm font-medium block mb-1">Budget *</label>
                 <div className="relative">
@@ -145,7 +210,6 @@ function PostJob() {
                 </div>
               </div>
 
-              {/* Deadline */}
               <div>
                 <label className="text-sm font-medium block mb-1">Deadline *</label>
                 <div className="relative">

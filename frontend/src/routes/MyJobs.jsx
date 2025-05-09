@@ -116,7 +116,7 @@ function MyJobs() {
                 <CheckCircle2 className="w-5 h-5" />
                 <span>Apply</span>
               </button>
-              <button className="flex items-center gap-1 px-6 py-2 border border-red-500 text-red-600 px-3 py-1 rounded-md text-sm hover:bg-red-50 transition">
+              <button className="flex items-center gap-1 px-6 py-2 border border-red-500 text-red-600 rounded-md text-sm hover:bg-red-50 transition">
                 <FilterX className="w-5 h-5" />
                 <span>Clear Filters</span>
               </button>

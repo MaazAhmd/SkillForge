@@ -8,6 +8,11 @@ const ProjectSchema = new mongoose.Schema(
             ref: "Freelancer",
             required: true,
         },
+        clientId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Client",
+            required: true,
+        },
         jobPostId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "JobPost",
@@ -25,6 +30,7 @@ const ProjectSchema = new mongoose.Schema(
             enum: [
                 "in-process",
                 "delivered",
+                "in-revision",
                 "completed-not-reviewed",
                 "completed-reviewed",
                 "cancelled",
@@ -36,9 +42,15 @@ const ProjectSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Review",
         },
+        deliveries: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Delivery",
+            },
+        ],
     },
     { timestamps: true }
 );
 const Project = mongoose.model("Project", ProjectSchema);
 
-module.exports = Project;
+module.exports = {Project};

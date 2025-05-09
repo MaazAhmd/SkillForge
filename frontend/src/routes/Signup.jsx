@@ -5,35 +5,25 @@ import { Link } from "react-router-dom";
 import '../index.css';
 import RoleToggle from "../components/RoleToggle";
 import { useNavigate } from "react-router-dom";
-import { clearError } from "../redux/slices/authSlice";
 
 function SignUp() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   const { status, error } = useSelector((state) => state.auth);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("freelancer");
+  const [name, setName] = useState(""); 
+  
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const resultAction = await dispatch(registerUser({ email, password, role }));
+    const resultAction = await dispatch(registerUser({ name, email, password, role }));
   
     if (registerUser.fulfilled.match(resultAction)) {
       navigate('/'); 
     }
-  };
-
-
-  
-  useEffect
-  (() => {
-    dispatch(clearError());
-  }, [dispatch]);
-  
-  
+  };  
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <div className="py-8 px-4">
@@ -64,6 +54,18 @@ function SignUp() {
               required
             />
           </div>
+          <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Name</label>
+          <input
+            type="text"
+            placeholder="Your full name"
+            className="w-full px-4 py-3 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+
 
           <div className="mb-4">
             <label className="block text-gray-700 mb-1">Password</label>

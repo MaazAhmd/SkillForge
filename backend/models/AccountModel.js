@@ -24,5 +24,9 @@ AccountSchema.methods.sendFunds = function (amount, recipientAccount) {
     recipientAccount.balance += amount;
     return Promise.all([this.save(), recipientAccount.save()]);
 };
+AccountSchema.statics.getAccountByUserId = function (userId) {
+    return this.findOne({ userId }).populate("userId");
+};
 
-module.exports = mongoose.model("Account", AccountSchema);
+const Account = mongoose.model("Account", AccountSchema);
+module.exports = { Account };

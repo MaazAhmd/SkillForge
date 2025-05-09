@@ -1,3 +1,12 @@
+const { Proposal } = require("../models/ProposalModel");
+const { Project } = require("../models/ProjectModel");
+const { User, Freelancer, Client } = require("../models/UserModel");
+const { JobPost } = require("../models/JobPostModel");
+const { ApiError } = require("../utils/apiError");
+const { ApiResponse } = require("../utils/ApiResponse");
+const { Account } = require("../models/AccountModel");
+const { asyncHandler } = require("../utils/asyncHandler");
+
 const getProjects = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const role = req.user.role; // 'client' or 'freelancer'
@@ -11,11 +20,33 @@ const getProjects = asyncHandler(async (req, res) => {
         query.freelancerId = freelancer._id;
     }
 
-    const projects = await Project.find(query)
-        .populate("freelancerId jobPostId proposalId reviewId");
+    const projects = await Project.find(query).populate(
+        "freelancerId jobPostId proposalId reviewId"
+    );
     res.status(200).json(new ApiResponse(200, projects));
 });
 
+const getProjectsById = asyncHandler(async (req, res) => {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+        throw new ApiError(404, "Project not found");
+    }
+    const role = req.user.role;
+
+    if (role === "client") {
+        const client = await Client.findClientByUserId(req.user._id);
+        if (!project.clientId.equals(client._id)) {
+            throw new ApiError(403, "Unauthorized");
+        }
+    } else if (role === "freelancer") {
+        const freelancer = await Freelancer.findFreelancerByUserId(
+            req.user._id
+        );
+        if (!project.freelancerId.equals(freelancer._id)) {
+            throw new ApiError(403, "Unauthorized");
+        }
+    }
+});
 
 const updateDeadline = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -36,26 +67,26 @@ const updateDeadline = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, project, "Deadline updated"));
 });
 
-const updatePrice = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const { price } = req.body;
-    if (!price) throw new ApiError(400, "New price required");
+// const updatePrice = asyncHandler(async (req, res) => {
+//     const { id } = req.params;
+//     const { price } = req.body;
+//     if (!price) throw new ApiError(400, "New price required");
 
-    const project = await Project.findById(id).populate("jobPostId");
-    if (!project) throw new ApiError(404, "Project not found");
+//     const project = await Project.findById(id).populate("jobPostId");
+//     if (!project) throw new ApiError(404, "Project not found");
 
-    const client = await Client.findClientByUserId(req.user._id);
-    if (!project.jobPostId.clientId.equals(client._id)) {
-        throw new ApiError(403, "Unauthorized");
-    }
+//     const client = await Client.findClientByUserId(req.user._id);
+//     if (!project.jobPostId.clientId.equals(client._id)) {
+//         throw new ApiError(403, "Unauthorized");
+//     }
 
-    project.price = price;
-    await project.save();
+//     project.price = price;
+//     await project.save();
 
-    res.status(200).json(new ApiResponse(200, project, "Price updated"));
-});
+//     res.status(200).json(new ApiResponse(200, project, "Price updated"));
+// });
 
-const markDelivered = asyncHandler(async (req, res) => {
+const deliverProject = asyncHandler(async (req, res) => {
     const freelancer = await Freelancer.findFreelancerByUserId(req.user._id);
     const project = await Project.findById(req.params.id);
 
@@ -63,17 +94,58 @@ const markDelivered = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Unauthorized");
     }
 
+    // TODO: Handle File Uploads
+    const { message } = req.body;
+
+    if (!message) {
+        throw new ApiError(400, "Message is required");
+    }
+
+    const newDelivery = await Delivery.create({
+        message,
+        files: [],
+        projectId: project._id,
+    });
+
+    // Add delivery to project
+    project.deliveries.push(newDelivery._id);
     project.status = "delivered";
     await project.save();
 
-    res.status(200).json(new ApiResponse(200, project, "Project marked delivered"));
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            { project, delivery: newDelivery },
+            "Delivery submitted and project marked as delivered"
+        )
+    );
+});
+
+const requestRevision = asyncHandler(async (req, res) => {
+    const project = await Project.findById(req.params.id);
+    const client = await Client.findClientByUserId(req.user._id);
+
+    if (!project || !project.clientId.equals(client._id)) {
+        throw new ApiError(403, "Unauthorized");
+    }
+
+    project.status = "in-revision";
+    await project.save();
+
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            project,
+            "Revision requested, project marked as in-revision"
+        )
+    );
 });
 
 const markCompleted = asyncHandler(async (req, res) => {
     const client = await Client.findClientByUserId(req.user._id);
     const project = await Project.findById(req.params.id).populate("jobPostId");
 
-    if (!project || !project.jobPostId.clientId.equals(client._id)) {
+    if (!project || !project.clientId.equals(client._id)) {
         throw new ApiError(403, "Unauthorized");
     }
 
@@ -81,5 +153,19 @@ const markCompleted = asyncHandler(async (req, res) => {
     project.completionDate = new Date();
     await project.save();
 
-    res.status(200).json(new ApiResponse(200, project, "Project marked completed"));
+    // TODO: Handle payment logic
+
+    res.status(200).json(
+        new ApiResponse(200, project, "Project marked completed")
+    );
 });
+
+module.exports = {
+    getProjects,
+    getProjectsById,
+    updateDeadline,
+    // updatePrice,
+    deliverProject,
+    requestRevision,
+    markCompleted,
+};
