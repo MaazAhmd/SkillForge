@@ -46,7 +46,7 @@ function JobCard({ job, activeTab }) {
         ) : (
           <div className="flex flex-wrap gap-2">
             {/* xs: 1 tag */}
-            {job.tags.slice(0, 1).map((tag) => (
+            {job.tags?.slice(0, 1).map((tag) => (
               <span
                 key={tag}
                 className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
@@ -54,15 +54,15 @@ function JobCard({ job, activeTab }) {
                 {tag}
               </span>
             ))}
-            {job.tags.length > 1 && (
+            {job.tags?.length > 1 && (
               <span className="px-3 py-1 bg-gray-200 rounded-full text-sm text-gray-500 sm:hidden">
-                +{job.tags.length - 1}
+                +{job.tags?.length - 1}
               </span>
             )}
 
             {/* sm: 2 tags */}
             <div className="hidden sm:flex gap-2">
-              {job.tags.slice(1, 2).map((tag) => (
+              {job.tags?.slice(1, 2).map((tag) => (
                 <span
                   key={tag}
                   className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
@@ -70,16 +70,16 @@ function JobCard({ job, activeTab }) {
                   {tag}
                 </span>
               ))}
-              {job.tags.length > 2 && (
+              {job.tags?.length > 2 && (
                 <span className="px-3 py-1 bg-gray-200 rounded-full text-sm text-gray-500 md:hidden">
-                  +{job.tags.length - 2}
+                  +{job.tags?.length - 2}
                 </span>
               )}
             </div>
 
             {/* md: 3 tags */}
             <div className="hidden md:flex gap-2">
-              {job.tags.slice(2, 3).map((tag) => (
+              {job.tags?.slice(2, 3).map((tag) => (
                 <span
                   key={tag}
                   className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
@@ -87,9 +87,9 @@ function JobCard({ job, activeTab }) {
                   {tag}
                 </span>
               ))}
-              {job.tags.length > 3 && (
+              {job.tags?.length > 3 && (
                 <span className="px-3 py-1 bg-gray-200 rounded-full text-sm text-gray-500">
-                  +{job.tags.length - 3}
+                  +{job.tags?.length - 3}
                 </span>
               )}
             </div>

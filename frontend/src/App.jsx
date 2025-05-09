@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import AddPortfolio from "./routes/AddPortfolio";
 import PortfolioDetail from "./routes/PortfolioDetail";
+import Proposals from "./routes/Proposals";
 
 function App() {
     const dispatch = useDispatch();
@@ -58,6 +59,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <MyProjects />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/proposals"
+                        element={
+                            <ProtectedRoute>
+                                <Proposals />
                             </ProtectedRoute>
                         }
                     />

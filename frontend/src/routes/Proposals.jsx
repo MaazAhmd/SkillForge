@@ -7,28 +7,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAppliedJobs } from "../redux/slices/appliedJobsSlice";
 import { fetchActiveProjects } from "../redux/slices/projectSlice";
 import { fetchCategories, fetchJobs } from "../redux/slices/jobSlice";
+import ProposalTabContent from "../components/Proposals/ProposalTabContent";
+import ProposalTabs from "../components/Proposals/ProposalTabs";
+import { fetchProposals } from "../redux/slices/proposalsSlice";
 
-function MyProjects() {
-    const [activeTab, setActiveTab] = useState("active");
+function Proposals() {
+    const [activeTab, setActiveTab] = useState("submitted");
     const [showFilters, setShowFilters] = useState(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(fetchActiveProjects());
+        dispatch(fetchProposals());
     }, [dispatch]);
 
-
-    useEffect(() => {
-        dispatch(fetchJobs());
-        dispatch(fetchCategories());
-    }, [dispatch]);
-
-    const projects = useSelector((state) => state.project.activeProjects) || [];
+    const proposals = useSelector((state) => state.proposals.proposals) || [];
 
     return (
         <div className="min-h-screenprimary">
             <main className="max-w-7xl mx-auto px-4 py-6">
-                <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <ProposalTabs
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                />
 
                 {/* Search and Filters */}
                 <div className="mb-6">
@@ -37,9 +37,9 @@ function MyProjects() {
                         <input
                             type="text"
                             placeholder={
-                                activeTab === "active"
-                                    ? "Search in Active projects..."
-                                    : "Search in Completed projects..."
+                                activeTab === "submitted"
+                                    ? "Search from jobs you have applied to..."
+                                    : "Search in expired/rejected proposals..."
                             }
                             className="w-full pl-10 pr-20 py-3 bg-darkgrey rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -131,13 +131,13 @@ function MyProjects() {
                     )}
                 </div>
 
-                <TabContent
+                <ProposalTabContent
                     activeTab={activeTab}
-                    jobs={projects}
+                    proposals={proposals}
                 />
             </main>
         </div>
     );
 }
 
-export default MyProjects;
+export default Proposals;

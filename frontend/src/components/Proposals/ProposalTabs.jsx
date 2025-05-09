@@ -1,7 +1,5 @@
-import React from "react";
-
-function Tabs({ activeTab, setActiveTab }) {
-    const tabOptions = ["active", "completed"];
+function ProposalTabs({ activeTab, setActiveTab }) {
+    const tabOptions = ["submitted", "rejected"];
 
     return (
         <div className="flex md:space-x-6 space-x-4 mb-6">
@@ -22,4 +20,4 @@ function Tabs({ activeTab, setActiveTab }) {
     );
 }
 
-export default Tabs;
+export default ProposalTabs;

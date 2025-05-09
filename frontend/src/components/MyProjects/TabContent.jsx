@@ -1,7 +1,7 @@
 import React from "react";
 import JobCard from "../Jobs/JobCard";
 
-function TabContent({ activeTab, jobs, appliedJobs }) {
+function TabContent({ activeTab, jobs }) {
     if (activeTab === "active") {
         return (
             <>
@@ -10,12 +10,8 @@ function TabContent({ activeTab, jobs, appliedJobs }) {
                     {jobs
                         .filter((job) => job.dueType === "today")
                         .map((job) => (
-                            <div className="mb-5">
-                                <JobCard
-                                    key={job.id}
-                                    activeTab={activeTab}
-                                    job={job}
-                                />
+                            <div key={job.id} className="mb-5">
+                                <JobCard activeTab={activeTab} job={job} />
                             </div>
                         ))}
                 </div>
@@ -26,41 +22,37 @@ function TabContent({ activeTab, jobs, appliedJobs }) {
                     {jobs
                         .filter((job) => job.dueType === "next5days")
                         .map((job) => (
+                            <div key={job.id} className="mb-5">
+                                <JobCard activeTab={activeTab} job={job} />
+                            </div>
+                        ))}
+                </div>
+            </>
+        );
+    } else if (activeTab === "completed") {
+        return (
+            <>
+                <div className="mb-6">
+                    {jobs
+                        .filter((job) => job.dueType === "today")
+                        .map((job) => (
+                            <div key={job.id} className="mb-5">
+                                <JobCard activeTab={activeTab} job={job} />
+                            </div>
+                        ))}
+                </div>
+                <div>
+                    {jobs
+                        .filter((job) => job.dueType === "next5days")
+                        .map((job) => (
                             <div className="mb-5">
-                                <JobCard
-                                    key={job.id}
-                                    activeTab={activeTab}
-                                    job={job}
-                                />
+                                <JobCard activeTab={activeTab} job={job} />
                             </div>
                         ))}
                 </div>
             </>
         );
     }
-
-    if (activeTab === "applied") {
-        return (
-            <div>
-                <h2 className="text-lg font-semibold mb-4">
-                    Jobs you have applied to
-                </h2>
-                {appliedJobs.map((job) => (
-                    <div className="mb-5">
-                        {job && (
-                            <JobCard
-                                key={job.id}
-                                activeTab={activeTab}
-                                job={job}
-                            />
-                        )}
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
-    return <div className="text-center text-gray-500 mt-8">No jobs found</div>;
 }
 
 export default TabContent;

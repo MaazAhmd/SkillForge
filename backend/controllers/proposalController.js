@@ -42,7 +42,16 @@ const getProposals = asyncHandler(async (req, res) => {
         .limit(limit)
         .sort(sortOption)
         .populate("freelancerId", "-password -createdAt -updatedAt")
-        .populate("jobPostId");
+        .populate({
+            path: "jobPostId",
+            populate: {
+                path: "clientId",
+                populate: {
+                    path: "user",
+                    select: "name email profilePicture", // optional: fields from User
+                },
+            },
+        });
 
     res.status(200).json(
         new ApiResponse(200, proposals, "Proposals retrieved successfully")
