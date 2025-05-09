@@ -2,29 +2,17 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Search } from "lucide-react";
 import { Link } from "react-router-dom";
-
 import {
     fetchCategories,
     fetchJobs,
     setCategory,
     setSearchQuery,
 } from "../redux/slices/jobSlice";
-
 import CategoryTabs from "../components/Jobs/CategoryTabs";
 import JobCard from "../components/Jobs/JobCard";
 import OngoingProjectCard from "../components/Jobs/OngoingProjectCard";
 import MessageCard from "../components/Jobs/MessageCard";
-const ongoingProjects = [
-    {
-        title: "Creating a database using Postgres and development of a game development system...",
-        price: 5.5,
-        timeLeft: "2 hours",
-        author: {
-            name: "Maaz Ahmad",
-            avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2",
-        },
-    },
-];
+import { fetchActiveProjects } from "../redux/slices/projectSlice";
 
 const messages = [
     {
@@ -45,15 +33,20 @@ function Jobs() {
         error,
         categories,
     } = useSelector((state) => state.job);
-    console.log(
-        "Jobs:",
-        filteredJobs,
-        activeCategory,
-        searchQuery,
-        loading,
-        error,
-        categories
+
+    useEffect(() => {
+        dispatch(fetchActiveProjects());
+    }, [dispatch]);
+
+    const ongoingProjects = useSelector((state) =>
+        state.project.activeProjects?.filter(
+            (project) =>
+                project.status != "completed-not-reviewed" &&
+                project.status != "completed-reviewed" &&
+                project.status != "cancelled"
+        )
     );
+    console.log(ongoingProjects);
 
     useEffect(() => {
         dispatch(fetchJobs());
@@ -129,7 +122,7 @@ function Jobs() {
                                     Sort
                                 </button>
                             </div>
-                            {ongoingProjects.map((project, index) => (
+                            {ongoingProjects?.map((project, index) => (
                                 <OngoingProjectCard
                                     key={index}
                                     project={project}

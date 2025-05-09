@@ -4,7 +4,7 @@ import Signup from "./routes/Signup";
 import Home from "./routes/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Jobs from "./routes/Jobs";
-import MyJobs from "./routes/MyJobs";
+import MyProjects from "./routes/MyProjects";
 import Profile from "./routes/Profile";
 import JobDetail from "./routes/JobDetail";
 import { DashboardPage } from "./routes/Dashboard";
@@ -15,7 +15,6 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import AddPortfolio from "./routes/AddPortfolio";
 import PortfolioDetail from "./routes/PortfolioDetail";
-
 
 function App() {
     const dispatch = useDispatch();
@@ -55,10 +54,10 @@ function App() {
                         }
                     />
                     <Route
-                        path="/myjobs"
+                        path="/projects"
                         element={
                             <ProtectedRoute>
-                                <MyJobs />
+                                <MyProjects />
                             </ProtectedRoute>
                         }
                     />
@@ -94,10 +93,15 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                      <Route path="/portfolios/:id" element={  <ProtectedRoute>
-        <PortfolioDetail />
-      </ProtectedRoute>} />
-  <Route path="/logout" element={<LogoutRoute />} />
+                    <Route
+                        path="/portfolios/:id"
+                        element={
+                            <ProtectedRoute>
+                                <PortfolioDetail />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/logout" element={<LogoutRoute />} />
                 </Routes>
             </div>
         </Router>

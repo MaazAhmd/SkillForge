@@ -231,6 +231,32 @@ const acceptProposal = asyncHandler(async (req, res) => {
     );
 });
 
+const getAppliedJobs = asyncHandler(async (req, res) => {
+    const freelancer = await Freelancer.findFreelancerByUserId(req.user._id);
+    if (!freelancer) {
+        throw new ApiError(403, "You are not authorized as a freelancer");
+    }
+
+    const proposals = await Proposal.find({
+        freelancerId: freelancer._id,
+        status: { $in: ["submitted", "accepted", "rejected"] },
+    }).populate({
+        path: "jobPostId",
+        populate: {
+            path: "clientId",
+            populate: {
+                path: "user",
+                select: "name email profilePicture", // optional: fields from User
+            },
+        },
+    });
+
+    const appliedJobs = proposals.map((proposal) => proposal.jobPostId);
+
+    res.status(200).json(
+        new ApiResponse(200, appliedJobs, "Applied jobs fetched successfully")
+    );
+});
 // TODO: Proposal withdraw and reject option
 
 module.exports = {
@@ -241,4 +267,5 @@ module.exports = {
     deleteProposal,
     acceptProposal,
     getProposalsByJobId,
+    getAppliedJobs,
 };

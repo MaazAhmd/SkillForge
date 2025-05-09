@@ -39,12 +39,12 @@ function JobDetail() {
         axios
             .get(`jobs/${id}`)
             .then((res) => setJob(res.data.data))
-            .catch((err) => console.log("An error occurred" + err));
+            .catch((err) => console.log(err));
 
         axios
-            .get(`proposals/get-job-proposals/${id}`)
+            .get(`jobs/${id}/proposals`)
             .then((res) => setProposals(res.data.data))
-            .catch((err) => console.log("An error occurred" + err));
+            .catch((err) => console.log(err));
     });
 
     return (

@@ -14,11 +14,11 @@ function JobCard({ job, activeTab }) {
 
       <div className="flex items-center space-x-2 mb-4">
         <img
-          src={job.author.avatar}
-          alt={job.author.name}
+          src={job.clientId?.user?.profilePicture}
+          alt={job.clientId?.user?.name}
           className="w-6 h-6 rounded-full"
         />
-        <span className="text-sm text-gray-600">{job.author.name}</span>
+        <span className="text-sm text-gray-600">{job.clientId?.user?.name}</span>
       </div>
 
       <div className="flex items-center mt-3 justify-between flex-wrap gap-4">
