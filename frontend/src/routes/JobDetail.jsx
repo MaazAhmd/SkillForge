@@ -46,6 +46,7 @@ function JobDetail() {
             .then((res) => setProposals(res.data.data))
             .catch((err) => console.log(err));
     });
+    console.log(job);
 
     return (
         <div className="min-h-screen lg:py-5 lg:px-8 md:py-3 md:px-5">
@@ -170,34 +171,50 @@ function JobDetail() {
                         />
                     )}
 
-                    {/* Sidebar */}
+                    {/* Sidebar - User info */}
                     <div className="space-y-6">
-                        {/* Ongoing Projects */}
-                        <div className="bg-white p-4 rounded-lg">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-lg font-semibold">
-                                    Ongoing Projects
-                                </h2>
-                                <button className="text-sm text-gray-500">
-                                    Sort
+                        <h6 className="mb-4 text-lg font-bold">
+                            Client Information
+                        </h6>
+
+                        <div className="bg-white p-4 rounded-lg shadow">
+                            <div className="flex items-center space-x-3">
+                                <img
+                                    src={
+                                        job.clientId?.user?.profilePicture ||
+                                        "/profile/default-profile.png"
+                                    }
+                                    alt={job.clientId?.user?.name || "Client"}
+                                    className="w-10 h-10 rounded-full object-cover"
+                                />
+                                <div>
+                                    <p className="font-medium text-gray-900">
+                                        {job.clientId?.user?.name ||
+                                            "Unnamed Client"}
+                                    </p>
+
+                                    {/* Rating */}
+                                    <div className="flex items-center text-yellow-500 mt-1">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4 fill-current"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.781 1.401 8.17L12 18.896l-7.335 3.865 1.401-8.17L.132 9.21l8.2-1.192z" />
+                                        </svg>
+                                        <span className="ml-1 text-sm text-gray-700 font-semibold">
+                                            4.8
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Send Message Button */}
+                            <div className="mt-4">
+                                <button className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition">
+                                    Send Message
                                 </button>
                             </div>
-                            {ongoingProjects.map((project, index) => (
-                                <OngoingProjectCard
-                                    key={index}
-                                    project={project}
-                                />
-                            ))}
-                        </div>
-
-                        {/* Recent Messages */}
-                        <div className="bg-white p-4 rounded-lg">
-                            <h2 className="text-lg font-semibold mb-4">
-                                Recent Messages
-                            </h2>
-                            {messages.map((message, index) => (
-                                <MessageCard key={index} message={message} />
-                            ))}
                         </div>
                     </div>
                 </div>

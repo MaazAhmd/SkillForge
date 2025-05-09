@@ -7,16 +7,16 @@ import Jobs from "./routes/Jobs";
 import MyProjects from "./routes/MyProjects";
 import Profile from "./routes/Profile";
 import JobDetail from "./routes/JobDetail";
+import ClientJobs from "./routes/ClientJobs";
 import { DashboardPage } from "./routes/Dashboard";
 import PostJob from "./routes/PostJob";
 import LogoutRoute from "./routes/Logout";
 import { clearError } from "./redux/slices/authSlice";
-import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import AddPortfolio from "./routes/AddPortfolio";
 import PortfolioDetail from "./routes/PortfolioDetail";
 import Proposals from "./routes/Proposals";
-
+import { useSelector, useDispatch } from "react-redux";
 function App() {
     const dispatch = useDispatch();
 
@@ -24,6 +24,7 @@ function App() {
         dispatch(clearError());
     }, [dispatch]);
 
+    const user = useSelector((state) => state.auth.user);
     return (
         <Router>
             <div className="font-sans">
@@ -42,7 +43,7 @@ function App() {
                         path="/jobs"
                         element={
                             <ProtectedRoute>
-                                <Jobs />
+                                {user.role === "client" ? <ClientJobs /> : <Jobs />}
                             </ProtectedRoute>
                         }
                     />

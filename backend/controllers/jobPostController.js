@@ -25,18 +25,19 @@ function formatDurationFromNow(deadline) {
 
     const parts = [];
     if (d.years()) parts.push(`${d.years()} year${d.years() > 1 ? "s" : ""}`);
-    if (d.months()) parts.push(`${d.months()} month${d.months() > 1 ? "s" : ""}`);
+    if (d.months())
+        parts.push(`${d.months()} month${d.months() > 1 ? "s" : ""}`);
     if (d.days()) parts.push(`${d.days()} day${d.days() > 1 ? "s" : ""}`);
     if (d.hours()) parts.push(`${d.hours()} hour${d.hours() > 1 ? "s" : ""}`);
-    if (d.minutes()) parts.push(`${d.minutes()} minute${d.minutes() > 1 ? "s" : ""}`);
+    if (d.minutes())
+        parts.push(`${d.minutes()} minute${d.minutes() > 1 ? "s" : ""}`);
 
-    return parts.slice(0, 3).join(" "); 
+    return parts.slice(0, 3).join(" ");
 }
-
 
 const getJobPosts = asyncHandler(async (req, res) => {
     let limit = 50; // Default limit
-  
+
     if (req.query?.limit) {
         const parsedLimit = parseInt(req.query.limit, 10);
         if (!isNaN(parsedLimit) && parsedLimit > 0) {
@@ -51,35 +52,95 @@ const getJobPosts = asyncHandler(async (req, res) => {
             ? { createdAt: 1 }
             : {};
 
-        const jobPosts = await JobPost.find()
+    const jobPosts = await JobPost.find()
         .limit(limit)
         .sort(sortOption)
         .populate({
             path: "clientId",
-            populate: { path: "user", model: "User", select: "name profilePicture" },
+            populate: {
+                path: "user",
+                model: "User",
+                select: "name profilePicture",
+            },
         });
-    
-    const jobPostsWithDuration = jobPosts.map(job => ({
+
+    const jobPostsWithDuration = jobPosts.map((job) => ({
         ...job.toObject(),
         deadline: job.deadline?.toISOString().split("T")[0], // ← formatted date only
         author: {
             name: job.clientId.user.name,
             avatar: job.clientId.user.profilePicture,
-        }
+        },
     }));
     res.status(200).json(
-        new ApiResponse(200, jobPostsWithDuration, "Jobs retrieved successfully")
+        new ApiResponse(
+            200,
+            jobPostsWithDuration,
+            "Jobs retrieved successfully"
+        )
     );
-    
+});
+
+const getClientJobPosts = asyncHandler(async (req, res) => {
+    let limit = 50;
+
+    if (req.query?.limit) {
+        const parsedLimit = parseInt(req.query.limit, 10);
+        if (!isNaN(parsedLimit) && parsedLimit > 0) {
+            limit = parsedLimit;
+        }
+    }
+
+    const sortOption =
+        req.query?.sort === "desc"
+            ? { createdAt: -1 }
+            : req.query?.sort === "asc"
+            ? { createdAt: 1 }
+            : {};
+
+    const client = await Client.findClientByUserId(req.user._id);
+
+    const clientJobPosts = await JobPost.find({ clientId: client._id })
+        .limit(limit)
+        .sort(sortOption)
+        .populate({
+            path: "clientId",
+            populate: {
+                path: "user",
+                model: "User",
+                select: "name profilePicture",
+            },
+        });
+
+    const jobPostsWithDetails = clientJobPosts.map((job) => ({
+        ...job.toObject(),
+        deadline: job.deadline?.toISOString().split("T")[0],
+        author: {
+            name: job.clientId?.user?.name,
+            avatar: job.clientId?.user?.profilePicture,
+        },
+    }));
+
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            jobPostsWithDetails,
+            "Client job posts retrieved successfully"
+        )
+    );
 });
 
 const getJobPostById = asyncHandler(async (req, res) => {
     const jobPostId = req.params.id;
 
-    const jobPost = await JobPost.findById(jobPostId)?.populate(
-        "clientId",
-        "-password -createdAt -updatedAt"
-    );
+    const jobPost = await JobPost.findById(jobPostId).populate({
+        path: "clientId",
+        select: "-password -createdAt -updatedAt",
+        populate: {
+            path: "user",
+            select: "-password -createdAt -updatedAt -email -__v",
+        },
+    });
     if (!jobPost) {
         throw new ApiError(404, "Job post not found with this ID");
     }
@@ -94,13 +155,18 @@ const getAllCategories = asyncHandler(async (req, res) => {
     res.status(200).json(categories);
 });
 
-
-
 const createJobPost = asyncHandler(async (req, res) => {
     const client = await Client.findClientByUserId(req.user._id);
     if (!client) throw new ApiError(404, "Client not found");
 
-    const { title, description, budget, deadline, category, skills = [] } = req.body;
+    const {
+        title,
+        description,
+        budget,
+        deadline,
+        category,
+        skills = [],
+    } = req.body;
 
     if (!title || !budget || !deadline || !category) {
         throw new ApiError(400, "Missing required fields");
@@ -108,7 +174,10 @@ const createJobPost = asyncHandler(async (req, res) => {
 
     const existingCategory = await Category.findOne({ name: category });
     if (!existingCategory) {
-        throw new ApiError(400, "Invalid category. Choose from available options.");
+        throw new ApiError(
+            400,
+            "Invalid category. Choose from available options."
+        );
     }
 
     const jobPost = await JobPost.create({
@@ -118,12 +187,13 @@ const createJobPost = asyncHandler(async (req, res) => {
         deadline,
         clientId: client._id,
         category: existingCategory.name,
-        skills: skills.map(s => s.toLowerCase()),
+        skills: skills.map((s) => s.toLowerCase()),
     });
 
-    res.status(201).json(new ApiResponse(201, jobPost, "Job post created successfully"));
+    res.status(201).json(
+        new ApiResponse(201, jobPost, "Job post created successfully")
+    );
 });
-
 
 const updateJobPost = asyncHandler(async (req, res) => {
     if (!req.body) {
@@ -191,5 +261,6 @@ module.exports = {
     createJobPost,
     updateJobPost,
     deleteJobPost,
-    getAllCategories
+    getAllCategories,
+    getClientJobPosts,
 };

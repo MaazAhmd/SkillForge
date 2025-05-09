@@ -7,6 +7,7 @@ const {
     updateJobPost,
     deleteJobPost,
     getAllCategories,
+    getClientJobPosts,
 } = require("../controllers/jobPostController");
 const { verifyToken } = require("../middlewares/authMiddleware");
 const authorizeRoles = require("../middlewares/rolesMiddleware");
@@ -25,6 +26,8 @@ router.get(
 router.get("/categories", getAllCategories);
 router.get("/:id", getJobPostById);
 router.get("/:jobPostId/proposals", verifyToken, getProposalsByJobId);
+
+router.get("/get/client", verifyToken, authorizeRoles("client"), getClientJobPosts);
 router.post("/create", verifyToken, authorizeRoles("client"), createJobPost);
 router.put("/:id/update", verifyToken, authorizeRoles("client"), updateJobPost);
 router.delete(

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Timer, FileText, XCircle } from 'lucide-react';
+import { Timer, FileText, XCircle, Scale } from 'lucide-react';
 
 function JobCard({ job, activeTab }) {
   const isApplied = activeTab === 'applied';
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm mb-2">
+    <div className="bg-white p-6 rounded-lg shadow-sm mb-2" style={{hover: {Scale: '1.02'}}}>
       <div className="flex items-start justify-between mb-4">
         <h3 className="text-lg font-medium text-gray-900">{job.title}</h3>
       </div>
@@ -14,7 +14,7 @@ function JobCard({ job, activeTab }) {
 
       <div className="flex items-center space-x-2 mb-4">
         <img
-          src={job.clientId?.user?.profilePicture}
+          src={job.clientId?.user?.profilePicture || '../../public/profile/default-profile.png'}
           alt={job.clientId?.user?.name}
           className="w-6 h-6 rounded-full"
         />
@@ -24,11 +24,11 @@ function JobCard({ job, activeTab }) {
       <div className="flex items-center mt-3 justify-between flex-wrap gap-4">
         <div className="flex items-center space-x-3">
           <span className="bg-primary text-white px-3 py-1 rounded-full font-semibold text-sm">
-            ${job.price}
+            ${job.budget}
           </span>
           <div className="flex items-center text-gray-500 text-sm">
             <Timer className="h-4 w-4 mr-1" />
-            {job.duration}
+            {job.deadline || "N/A"}
           </div>
         </div>
 

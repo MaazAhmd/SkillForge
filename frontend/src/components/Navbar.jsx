@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
-    const dispatch = useDispatch();
 
     const user = useSelector((state) => state.auth.user);
 
@@ -37,12 +36,21 @@ export function Navbar() {
                                 Find Work
                             </Link>
                         )}
+                        {user.role === "client" && (
+                            <Link
+                                to="/jobs"
+                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                            >
+                                Posted Jobs
+                            </Link>
+                        )}
                         <Link
                             to="/projects"
                             className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                         >
                             Projects
                         </Link>
+
                         {user.role === "freelancer" && (
                             <Link
                                 to="/proposals"
@@ -65,12 +73,14 @@ export function Navbar() {
                         >
                             Dashboard
                         </Link>
-                        <Link
-                            to="/addportfolio"
-                            className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                        >
-                            Portfolio
-                        </Link>
+                        {user.role === "freelancer" && (
+                            <Link
+                                to="/addportfolio"
+                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                            >
+                                Portfolio
+                            </Link>
+                        )}
                     </nav>
 
                     {/* Right Section */}

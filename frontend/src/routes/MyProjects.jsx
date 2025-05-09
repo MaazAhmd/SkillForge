@@ -17,7 +17,6 @@ function MyProjects() {
         dispatch(fetchActiveProjects());
     }, [dispatch]);
 
-
     useEffect(() => {
         dispatch(fetchJobs());
         dispatch(fetchCategories());
@@ -131,10 +130,7 @@ function MyProjects() {
                     )}
                 </div>
 
-                <TabContent
-                    activeTab={activeTab}
-                    jobs={projects}
-                />
+                <TabContent activeTab={activeTab} jobs={projects} />
             </main>
         </div>
     );
