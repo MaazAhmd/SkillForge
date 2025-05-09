@@ -67,7 +67,6 @@ const getJobPosts = asyncHandler(async (req, res) => {
             avatar: job.clientId.user.profilePicture,
         }
     }));
-    console.log(jobPostsWithDuration);
     res.status(200).json(
         new ApiResponse(200, jobPostsWithDuration, "Jobs retrieved successfully")
     );
@@ -139,9 +138,6 @@ const updateJobPost = asyncHandler(async (req, res) => {
     }
 
     const client = await Client.findClientByUserId(req.user._id);
-
-    console.log(`Client ID: ${client._id}`);
-    console.log(`Job Post Client ID: ${jobPost.clientId}`);
 
     if (!jobPost.clientId.equals(client._id)) {
         throw new ApiError(
