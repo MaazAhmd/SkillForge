@@ -21,9 +21,9 @@ const initSocket = (server) => {
       console.log(`User ${userId} joined room ${chatId}`);
     });
 
-    socket.on("sendMessage", ({ chatId, sender, content, timestamp }) => {
-      console.log("Message received:", { chatId, sender, content, timestamp });
-      const msg = { chatId, sender, content, timestamp: timestamp || Date.now() };
+    socket.on("sendMessage", ({ chatId, sender, content, attachment, timestamp }) => {
+      console.log("Message received:", { chatId, sender,attachment, content, timestamp });
+      const msg = { chatId, sender, content,attachment, timestamp: timestamp || Date.now() };
 
       socket.to(chatId).emit("receiveMessage", msg);
 

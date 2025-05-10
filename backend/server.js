@@ -33,7 +33,10 @@ app.use("/api/proposals", proposalRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/chat", chatRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use('/uploads/images', express.static(path.join(__dirname, 'uploads', 'images')));
+app.use('/uploads/files',  express.static(path.join(__dirname, 'uploads', 'files')));
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

@@ -32,14 +32,23 @@ exports.createChatMessage = async (req, res) => {
   const me      = req.user._id;
   const other   = req.body.receiverId;
   const [user1, user2] = orderedPair(me, other);
-  const { content, attachment } = req.body;
+  const { content }    = req.body;
+
+  const attachment = req.file 
+    ? `http://localhost:5000/uploads/${req.body.mode === 'file' ? 'files' : 'images'}/${req.file.filename}`  
+    : null;
 
   let chat = await ChatSession.findOne({ user1, user2 });
   if (!chat) {
     chat = await ChatSession.create({ user1, user2, messages: [] });
   }
 
-  const msg = { sender: req.user, content, attachment, timestamp: Date.now() };
+  const msg = {
+    sender: req.user,
+    content,
+    attachment,
+    timestamp: Date.now()
+  };
   chat.messages.push(msg);
   await chat.save();
 
