@@ -6,6 +6,7 @@ export const registerUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post('/users/signup', formData);
+      console.log(response.data, 'response data');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Registration failed');
@@ -28,7 +29,7 @@ export const loginUser = createAsyncThunk(
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
+    user: JSON.parse(localStorage.getItem('user')) || null,
     token: localStorage.getItem('token') || null,
     error: null,
     status: 'idle',
@@ -39,6 +40,7 @@ const authSlice = createSlice({
       state.token = null;
       state.error = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
     clearError: (state) => {
       state.error = null;
@@ -50,11 +52,12 @@ const authSlice = createSlice({
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+     .addCase(registerUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload.data.user;
         state.token = action.payload.data.token;
         localStorage.setItem('token', action.payload.data.token);
+        localStorage.setItem('user', JSON.stringify(action.payload.data.createdUser));
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = 'failed';
@@ -70,6 +73,7 @@ const authSlice = createSlice({
         state.user = action.payload.data.user;
         state.token = action.payload.data.token;
         localStorage.setItem('token', action.payload.data.token);
+        localStorage.setItem('user', JSON.stringify(action.payload.data.user)); 
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';

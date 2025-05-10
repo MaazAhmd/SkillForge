@@ -5,7 +5,8 @@ const PortfolioItemSchema = new mongoose.Schema({
   description: { type: String, required: true },
   skills: [{ type: String }],
   price: { type: Number, required: true },
-  imageUrls: [{ type: String, required: true }]
+  imageUrls: [{ type: String, required: true }],
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model("PortfolioItem", PortfolioItemSchema);

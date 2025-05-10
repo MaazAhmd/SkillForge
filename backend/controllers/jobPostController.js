@@ -43,7 +43,7 @@ const getJobPosts = asyncHandler(async (req, res) => {
             limit = parsedLimit;
         }
     }
-
+    console.log(req.user);
     const sortOption =
         req.query?.sort === "desc"
             ? { createdAt: -1 }
@@ -67,7 +67,6 @@ const getJobPosts = asyncHandler(async (req, res) => {
             avatar: job.clientId.user.profilePicture,
         }
     }));
-    console.log(jobPostsWithDuration);
     res.status(200).json(
         new ApiResponse(200, jobPostsWithDuration, "Jobs retrieved successfully")
     );

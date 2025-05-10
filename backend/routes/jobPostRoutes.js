@@ -12,7 +12,7 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 const authorizeRoles = require("../middlewares/rolesMiddleware");
 const { getProposalsByJobId } = require("../controllers/proposalController");
 
-router.get("/", getJobPosts);
+router.get("/",verifyToken, getJobPosts);
 router.get("/categories", getAllCategories);
 router.get("/:id", getJobPostById);
 router.get("/:id/proposals", verifyToken, getProposalsByJobId);

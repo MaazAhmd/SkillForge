@@ -48,12 +48,10 @@ const signup = asyncHandler(async (req, res) => {
 
     await Account.create({ userId: newUser._id, balance: 0 });
 
-    const createdUser = await User.findById(newUser._id).select(
-        "-password -createdAt -updatedAt"
-    );
+    const createdUser = await User.findById(newUser._id);
 
     const token = createdUser.generateAccessToken();
-
+    createdUser.password = undefined;
     res.status(201).json(
         new ApiResponse(
             201,
@@ -67,7 +65,6 @@ const login = asyncHandler(async (req, res) => {
     if (!req.body) {
         throw new ApiError(400, "Request body is required");
     }
-    console.log(req.body);
     const { email, password } = req.body;
 
     if (

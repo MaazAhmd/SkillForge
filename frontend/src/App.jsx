@@ -14,6 +14,9 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import AddPortfolio from "./routes/AddPortfolio";
 import PortfolioDetail from "./routes/PortfolioDetail";
+import ChatPage from "./routes/ChatSessionPage";
+import ChatListPage from "./routes/ChatListPage";
+import ChatSessionPage from "./routes/ChatSessionPage";
 
 
 function App() {
@@ -85,9 +88,28 @@ function App() {
       </ProtectedRoute>
     }
   />
+    <Route
+        path="/chats"
+        element={
+          <ProtectedRoute>
+            <ChatListPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/chat/:chatId"
+        element={
+          <ProtectedRoute>
+            <ChatSessionPage />
+          </ProtectedRoute>
+        }
+      />
     <Route path="/portfolios/:id" element={  <ProtectedRoute>
         <PortfolioDetail />
       </ProtectedRoute>} />
+
+      
   <Route path="/logout" element={<LogoutRoute/>}/>
       </Routes>
       </div>
