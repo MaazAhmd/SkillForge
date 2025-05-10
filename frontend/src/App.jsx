@@ -14,82 +14,95 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import AddPortfolio from "./routes/AddPortfolio";
 import PortfolioDetail from "./routes/PortfolioDetail";
-
+import EditProfile from "./routes/EditProfile"; // Import the EditProfile component
 
 function App() {
-    const dispatch = useDispatch();
-  
+  const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(clearError());
   }, [dispatch]);
-   
+
   return (
     <Router>
       <div className="font-sans">
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route
-    path="/"
-    element={
-      <ProtectedRoute>
-        <Home />
-      </ProtectedRoute>
-    }
-  />
-        <Route
-    path="/jobs"
-    element={
-      <ProtectedRoute>
-        <Jobs />
-      </ProtectedRoute>
-    }
-  />
-        <Route
-    path="/myjobs"
-    element={
-      <ProtectedRoute>
-        <MyJobs />
-      </ProtectedRoute>
-    }
-  />
-        <Route
-    path="/profile"
-    element={
-      <ProtectedRoute>
-        <Profile />
-      </ProtectedRoute>
-    }
-  />
-        <Route
-    path="/dashboard"
-    element={
-      <ProtectedRoute>
-        <DashboardPage />
-      </ProtectedRoute>
-    }
-  />
-        <Route
-    path="/postjob"
-    element={
-      <ProtectedRoute>
-        <PostJob />
-      </ProtectedRoute>
-    }
-  />
-        <Route
-    path="/addportfolio"
-    element={
-      <ProtectedRoute>
-        <AddPortfolio />
-      </ProtectedRoute>
-    }
-  />
-    <Route path="/portfolios/:id" element={  <ProtectedRoute>
-        <PortfolioDetail />
-      </ProtectedRoute>} />
-  <Route path="/logout" element={<LogoutRoute/>}/>
-      </Routes>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jobs"
+            element={
+              <ProtectedRoute>
+                <Jobs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/myjobs"
+            element={
+              <ProtectedRoute>
+                <MyJobs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/postjob"
+            element={
+              <ProtectedRoute>
+                <PostJob />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/addportfolio"
+            element={
+              <ProtectedRoute>
+                <AddPortfolio />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portfolios/:id"
+            element={
+              <ProtectedRoute>
+                <PortfolioDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/logout" element={<LogoutRoute />} />
+          <Route
+            path="/edit-profile"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
       </div>
     </Router>
   );

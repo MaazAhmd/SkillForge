@@ -8,11 +8,40 @@ function EditProfile() {
   const [location, setLocation] = useState('');
   const [profilePic, setProfilePic] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Handle update logic here (API call or local state update)
-    console.log({ name, email, phone, description, location, profilePic });
-    alert("Profile updated successfully.");
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("description", description);
+    formData.append("location", location);
+    if (profilePic) {
+      formData.append("profilePic", profilePic);
+    }
+
+    try {
+      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+      const response = await fetch("http://localhost:5000/api/users/update-profile", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData, // Send the form data
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message || "Profile updated successfully.");
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || "Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred. Please try again.");
+    }
   };
 
   return (
