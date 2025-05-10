@@ -10,7 +10,7 @@ function EditProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const formData = new FormData();
     formData.append("name", name);
     formData.append("email", email);
@@ -20,7 +20,7 @@ function EditProfile() {
     if (profilePic) {
       formData.append("profilePic", profilePic);
     }
-
+  
     try {
       const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
       const response = await fetch("http://localhost:5000/api/users/update-profile", {
@@ -28,12 +28,31 @@ function EditProfile() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData, // Send the form data
+        body: formData,
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         alert(data.message || "Profile updated successfully.");
+  
+        // Fetch updated user data
+        const userResponse = await fetch("http://localhost:5000/api/users/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (userResponse.ok) {
+          const updatedUser = await userResponse.json();
+          // Update the frontend state with the updated user data
+          setName(updatedUser.name || "");
+          setEmail(updatedUser.email || "");
+          setPhone(updatedUser.phone || "");
+          setDescription(updatedUser.description || "");
+          setLocation(updatedUser.location || "");
+          setProfilePic(null); // Reset the profile picture input
+        }
       } else {
         const errorData = await response.json();
         alert(errorData.message || "Failed to update profile.");
