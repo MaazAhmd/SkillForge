@@ -90,8 +90,18 @@ const getProposalsByJobId = asyncHandler(async (req, res) => {
     } else {
         // Assume user is a client and return all proposals
         proposals = await Proposal.find({ jobPostId })
-            .populate("freelancerId", "-password -__v -createdAt -updatedAt")
-            .populate("jobPostId");
+            .populate({
+                path: "freelancerId",
+                select: "-password -__v -createdAt -updatedAt",
+                populate: {
+                    path: "user",
+                    model: "User",
+                    select: "name email profilePicture", // Add other fields as needed
+                },
+            })
+            .populate({
+                path: "jobPostId",
+            });
     }
 
     if (!proposals || proposals.length === 0) {
@@ -212,18 +222,35 @@ const acceptProposal = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Proposal already accepted");
     }
 
+    const jobPostId = proposal.jobPostId._id;
+    const jobPost = await JobPost.findById(jobPostId);
+    if (!jobPost) {
+        throw new ApiError(404, "Job post not found");
+    }
+    if (jobPost.status !== "open") {
+        throw new ApiError(400, "Job post is not open for proposals");
+    }
+
     // Getting user's account
     const account = await Account.getAccountByUserId(userId);
     if (!account) {
         // Creating new account if not found
-        const account = await Account.create({ userId: userId, balance: 500 });
+        account = await Account.create({ userId: userId, balance: 500 });
     }
     if (account.balance < proposal.price) {
         throw new ApiError(400, "Not enough balance to pay for the proposal");
     }
 
+    // Deducting the amount from the client's account
+    account.balance -= proposal.price;
+    await account.save();
+
     proposal.status = "accepted";
     await proposal.save();
+
+    // Updating the status of the job post:
+    jobPost.status = "assigned";
+    await jobPost.save();
 
     // Creating project as proposal is now accepted
     const project = await Project.create({

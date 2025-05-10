@@ -7,6 +7,7 @@ import Jobs from "./routes/Jobs";
 import MyProjects from "./routes/MyProjects";
 import Profile from "./routes/Profile";
 import JobDetail from "./routes/JobDetail";
+import ClientJobDetail from "./routes/ClientJobDetail";
 import ClientJobs from "./routes/ClientJobs";
 import { DashboardPage } from "./routes/Dashboard";
 import PostJob from "./routes/PostJob";
@@ -43,7 +44,11 @@ function App() {
                         path="/jobs"
                         element={
                             <ProtectedRoute>
-                                {user.role === "client" ? <ClientJobs /> : <Jobs />}
+                                {user.role === "client" ? (
+                                    <ClientJobs />
+                                ) : (
+                                    <Jobs />
+                                )}
                             </ProtectedRoute>
                         }
                     />
@@ -51,7 +56,11 @@ function App() {
                         path="/jobs/:id"
                         element={
                             <ProtectedRoute>
-                                <JobDetail />
+                                {user.role === "client" ? (
+                                    <ClientJobDetail />
+                                ) : (
+                                    <JobDetail />
+                                )}
                             </ProtectedRoute>
                         }
                     />

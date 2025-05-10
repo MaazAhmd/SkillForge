@@ -6,6 +6,7 @@ import projectReducer from "./slices/projectSlice";
 import appliedJobsReducer from "./slices/appliedJobsSlice";
 import proposalsReducer from "./slices/proposalsSlice";
 import clientJobsReducer from "./slices/clientJobsSlice";
+import accountReducer from "./slices/accountSlice";
 
 const store = configureStore({
     reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
         appliedJobs: appliedJobsReducer,
         proposals: proposalsReducer,
         clientJobs: clientJobsReducer,
+        account: accountReducer,
     },
 });
 
