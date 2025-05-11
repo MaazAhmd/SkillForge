@@ -12,7 +12,12 @@ function TabContent({ activeTab, projects }) {
     const isDueTodayOrPast = (date) => {
         return new Date(date) <= today;
     };
-
+    const projectsDueToday = projects.filter((project) =>
+        isDueTodayOrPast(project.deadline)
+    );
+    const projectsDueInFuture = projects.filter(
+        (project) => !isDueTodayOrPast(project.deadline)
+    );
     if (activeTab === "active") {
         return (
             <>
@@ -26,16 +31,13 @@ function TabContent({ activeTab, projects }) {
                         <h5>
                             An error occurred while fetching the projects...
                         </h5>
-                    ) : projects && projects.length > 0 ? (
-                        projects
-                            .filter((project) =>
-                                isDueTodayOrPast(project.deadline)
-                            )
-                            .map((project) => (
-                                <div key={project._id} className="mb-5">
-                                    <ProjectCard project={project} />
-                                </div>
-                            ))
+                    ) : projects && projectsDueToday.length > 0 ? (
+                            projectsDueToday
+                                .map((project) => (
+                                    <div key={project._id} className="mb-5">
+                                        <ProjectCard project={project} />
+                                    </div>
+                                ))
                     ) : (
                         <h5 className="text-gray-400 py-8 my-8 text-center">
                             No projects due today.
@@ -54,19 +56,15 @@ function TabContent({ activeTab, projects }) {
                         <h5>
                             An error occurred while fetching the projects...
                         </h5>
-                    ) : projects && projects.length > 0 ? (
-                        projects
-                            .filter(
-                                (project) => !isDueTodayOrPast(project.deadline)
-                            )
-                            .map((project) => (
-                                <div key={project._id} className="mb-5">
-                                    <ProjectCard
-                                        activeTab={activeTab}
-                                        project={project}
-                                    />
-                                </div>
-                            ))
+                    ) : projects && projectsDueInFuture.length > 0 ? (
+                            projectsDueInFuture.map((project) => (
+                                    <div key={project._id} className="mb-5">
+                                        <ProjectCard
+                                            activeTab={activeTab}
+                                            project={project}
+                                        />
+                                    </div>
+                                ))
                     ) : (
                         <h5 className="text-gray-400 py-8 my-8 text-center">
                             No projects due.

@@ -122,11 +122,7 @@ const deliverProject = asyncHandler(async (req, res) => {
     }
 
     // TODO: Handle File Uploads
-    const { message } = req.body;
-
-    if (!message) {
-        throw new ApiError(400, "Message is required");
-    }
+    const message = "message";
 
     const newDelivery = await Delivery.create({
         message,
@@ -174,7 +170,17 @@ const requestRevision = asyncHandler(async (req, res) => {
 const markCompleted = asyncHandler(async (req, res) => {
     const client = await Client.findClientByUserId(req.user._id);
     const project = await Project.findById(req.params.id).populate("jobPostId");
-
+    const freelancer = await Freelancer.findFreelancerByUserId(
+        project.freelancerId
+    );
+    const admin = await User.findOne({ role: "admin" });
+    console.log("Admin: ", admin);
+    const freelancerAccount = await Account.findOne({
+        userId: freelancer._id,
+    });
+    const adminAccount = await Account.findOne({
+        userId: admin._id,
+    });
     if (!project || !project.clientId.equals(client._id)) {
         throw new ApiError(403, "Unauthorized");
     }
@@ -186,10 +192,13 @@ const markCompleted = asyncHandler(async (req, res) => {
         );
     }
 
-    project.status = "completed-not-reviewed";
+    project.status = "completed-reviewed";
     project.completionDate = new Date();
     await project.save();
-
+    adminAccount.balance -= project.price * 0.1;
+    freelancerAccount.balance += project.price * 0.9;
+    await adminAccount.save();
+    await freelancerAccount.save();
     // TODO: Handle payment logic
 
     res.status(200).json(

@@ -1,5 +1,5 @@
 const Proposal = require("../models/ProposalModel");
-const { Freelancer, Client } = require("../models/UserModel");
+const { Freelancer, Client, User } = require("../models/UserModel");
 const { ApiError } = require("../utils/apiError");
 const { ApiResponse } = require("../utils/ApiResponse");
 const { Account } = require("../models/AccountModel");
@@ -232,9 +232,16 @@ const acceptProposal = asyncHandler(async (req, res) => {
 
     // Getting user's account
     const account = await Account.getAccountByUserId(userId);
+    const admin = await User.findOne({ role: "admin" });
+    if (!admin) {
+        throw new ApiError(500, "Admin account not found");
+    }
+    const adminAccount = await Account.getAccountByUserId(admin._id);
+    if (!adminAccount) {
+        throw new ApiError(500, "Admin account not found");
+    }
     if (!account) {
-        // Creating new account if not found
-        account = await Account.create({ userId: userId, balance: 500 });
+        account = await Account.create({ userId: userId, balance: 0 });
     }
     if (account.balance < proposal.price) {
         throw new ApiError(400, "Not enough balance to pay for the proposal");
@@ -242,6 +249,8 @@ const acceptProposal = asyncHandler(async (req, res) => {
 
     // Deducting the amount from the client's account
     account.balance -= proposal.price;
+    adminAccount.balance += proposal.price;
+    await adminAccount.save();
     await account.save();
 
     proposal.status = "accepted";

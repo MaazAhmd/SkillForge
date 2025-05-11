@@ -16,7 +16,6 @@ const ChatListPage = () => {
   if (status === 'loading' || loading) {
     return <div className="p-4">Loading…</div>;
   }
-console.log(chats, 'chats');
   return (
     <div className="max-w-md mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Chats</h1>
