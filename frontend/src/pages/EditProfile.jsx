@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function EditProfile() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
   const [profilePic, setProfilePic] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("email", email);
@@ -20,21 +20,24 @@ function EditProfile() {
     if (profilePic) {
       formData.append("profilePic", profilePic);
     }
-  
+
     try {
       const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-      const response = await fetch("http://localhost:5000/api/users/update-profile", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-  
+      const response = await fetch(
+        "http://localhost:5000/api/users/update-profile",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
       if (response.ok) {
         const data = await response.json();
         alert(data.message || "Profile updated successfully.");
-  
+
         // Fetch updated user data
         const userResponse = await fetch("http://localhost:5000/api/users/me", {
           method: "GET",
@@ -42,7 +45,7 @@ function EditProfile() {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         if (userResponse.ok) {
           const updatedUser = await userResponse.json();
           // Update the frontend state with the updated user data
@@ -65,12 +68,16 @@ function EditProfile() {
 
   return (
     <div className="p-6 max-w-md mx-auto bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Edit Profile</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
+        Edit Profile
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Profile Picture */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Profile Picture</label>
+          <label className="block font-medium text-gray-700 mb-1">
+            Profile Picture
+          </label>
           <input
             type="file"
             accept="image/*"
@@ -103,7 +110,9 @@ function EditProfile() {
 
         {/* Phone Number */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Phone Number</label>
+          <label className="block font-medium text-gray-700 mb-1">
+            Phone Number
+          </label>
           <input
             type="tel"
             className="w-full border border-gray-300 rounded px-3 py-2"
@@ -114,7 +123,9 @@ function EditProfile() {
 
         {/* Description */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Description</label>
+          <label className="block font-medium text-gray-700 mb-1">
+            Description
+          </label>
           <textarea
             className="w-full border border-gray-300 rounded px-3 py-2"
             rows="3"
@@ -125,7 +136,9 @@ function EditProfile() {
 
         {/* Location */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Location</label>
+          <label className="block font-medium text-gray-700 mb-1">
+            Location
+          </label>
           <input
             type="text"
             className="w-full border border-gray-300 rounded px-3 py-2"

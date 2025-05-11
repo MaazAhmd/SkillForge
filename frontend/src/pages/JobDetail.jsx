@@ -15,7 +15,7 @@ function JobDetail() {
   const { id } = useParams();
   const [job, setJob] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [proposals, setProposals] = useState([]);
+  const [proposal, setProposal] = useState(null);
   const [notification, setNotification] = useState(null);
   const user = useSelector((state) => state.auth.user);    const navigate = useNavigate();
 
@@ -43,12 +43,10 @@ function JobDetail() {
 
     axios
       .get(`jobs/${id}/proposals`)
-      .then((res) => setProposals(res.data.data))
+      .then((res) => setProposal(res.data.data))
       .catch((err) => console.log(err));
   }, []);
-  const userProposal = proposals?.find(
-    (prop) => prop.freelancerId == user?._id
-  );
+
   return (
     <div className="min-h-screen lg:py-5 lg:px-8 md:py-3 md:px-5">
       <main className="max-w-7xl mx-auto px-4 py-6">
@@ -114,8 +112,12 @@ function JobDetail() {
 
                 <div className="pt-4">
                   <button
+                    disabled={proposal}
                     onClick={() => setShowModal(true)}
-                    className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold text-white cursor-pointer"
+                    className={`bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold text-white cursor-pointer ${
+                      proposal
+                        && "opacity-50 pointer-events-none"
+                    }`}
                   >
                     Send Proposal
                   </button>
@@ -123,7 +125,7 @@ function JobDetail() {
               </div>
             </div>
             {/* Proposals Section */}
-            {userProposal && (
+            {proposal && (
               <div className="mt-6 bg-white p-6 rounded-xl space-y-4">
                 <h2 className="text-lg font-semibold">
                   Your Proposal for this Job
@@ -131,19 +133,19 @@ function JobDetail() {
                 <div className="border rounded-lg p-4 shadow-sm bg-gray-50">
                   <p className="text-sm text-gray-700 mb-1">
                     <span className="font-semibold">Price offered:</span> $
-                    {userProposal.price}
+                    {proposal.price}
                   </p>
                   <p className="text-sm text-gray-700 mb-1">
                     <span className="font-semibold">Deadline:</span>{" "}
-                    {new Date(userProposal.deadline).toLocaleDateString()}
+                    {new Date(proposal.deadline).toLocaleDateString()}
                   </p>
                   <p className="text-sm text-gray-700 mb-2">
                     <span className="font-semibold">Status:</span>{" "}
-                    <span className="capitalize">{userProposal.status}</span>
+                    <span className="capitalize">{proposal.status}</span>
                   </p>
                   <p className="font-semibold">Cover Letter:</p>
                   <p className="text-sm text-gray-600 italic">
-                    {userProposal.message}
+                    {proposal.message}
                   </p>
                 </div>
               </div>
