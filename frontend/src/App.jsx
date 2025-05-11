@@ -141,7 +141,14 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-
+                  <Route
+                      path="/edit-profile"
+                      element={
+                        <ProtectedRoute>
+                          <EditProfile />
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route path="/logout" element={<LogoutRoute />} />
                 </Routes>
             </div>
