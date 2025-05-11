@@ -14,4 +14,4 @@ const DeliverySchema = new mongoose.Schema(
 );
 const Delivery = mongoose.model("Delivery", DeliverySchema);
 
-module.exports = Delivery;
+module.exports = { Delivery };

@@ -1,15 +1,25 @@
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
-import jobReducer from './slices/jobSlice';
-import portfolioReducer from './slices/portfolioSlice';
-import chatReducer from './slices/chatSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./slices/authSlice";
+import jobReducer from "./slices/jobSlice";
+import portfolioReducer from "./slices/portfolioSlice";
+import projectReducer from "./slices/projectSlice";
+import appliedJobsReducer from "./slices/appliedJobsSlice";
+import proposalsReducer from "./slices/proposalsSlice";
+import clientJobsReducer from "./slices/clientJobsSlice";
+import accountReducer from "./slices/accountSlice";
+import chatReducer from "./slices/chatSlice";
 const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    job: jobReducer,
-    portfolio: portfolioReducer,
-    chat: chatReducer,
-  },
+    reducer: {
+        auth: authReducer,
+        job: jobReducer,
+        project: projectReducer,
+        portfolio: portfolioReducer,
+        appliedJobs: appliedJobsReducer,
+        proposals: proposalsReducer,
+        clientJobs: clientJobsReducer,
+        account: accountReducer,
+        chat: chatReducer,
+    },
 });
 
 export default store;

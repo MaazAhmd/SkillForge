@@ -3,7 +3,10 @@ module.exports = function authorizeRoles(...allowedRoles) {
         if (!req.user || !allowedRoles.includes(req.user.role)) {
             return res
                 .status(403)
-                .json({ message: "Forbidden: Access denied for this Role" });
+                .json({
+                    message: "Forbidden: Access denied for this Role",
+                    success: false,
+                });
         }
         next();
     };

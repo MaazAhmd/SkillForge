@@ -42,7 +42,16 @@ const getProposals = asyncHandler(async (req, res) => {
         .limit(limit)
         .sort(sortOption)
         .populate("freelancerId", "-password -createdAt -updatedAt")
-        .populate("jobPostId");
+        .populate({
+            path: "jobPostId",
+            populate: {
+                path: "clientId",
+                populate: {
+                    path: "user",
+                    select: "name email profilePicture", // optional: fields from User
+                },
+            },
+        });
 
     res.status(200).json(
         new ApiResponse(200, proposals, "Proposals retrieved successfully")
@@ -62,13 +71,38 @@ const getProposalById = asyncHandler(async (req, res) => {
         new ApiResponse(200, proposal, "Proposal retrieved successfully")
     );
 });
-
 const getProposalsByJobId = asyncHandler(async (req, res) => {
-    const { jobId } = req.params;
+    const { jobPostId } = req.params;
 
-    const proposals = await Proposal.find({ jobPostId: jobId })
-        .populate("freelancerId", "-password -__v -createdAt -updatedAt")
-        .populate("jobPostId");
+    const user = req.user;
+
+    let proposals;
+    // Check if user is a freelancer
+    const freelancer = await Freelancer.findFreelancerByUserId(user._id);
+    if (freelancer) {
+        // Return only their proposals for the job
+        proposals = await Proposal.find({
+            jobPostId,
+            freelancerId: freelancer._id,
+        })
+            .populate("freelancerId", "-password -__v -createdAt -updatedAt")
+            .populate("jobPostId");
+    } else {
+        // Assume user is a client and return all proposals
+        proposals = await Proposal.find({ jobPostId })
+            .populate({
+                path: "freelancerId",
+                select: "-password -__v -createdAt -updatedAt",
+                populate: {
+                    path: "user",
+                    model: "User",
+                    select: "name email profilePicture", // Add other fields as needed
+                },
+            })
+            .populate({
+                path: "jobPostId",
+            });
+    }
 
     if (!proposals || proposals.length === 0) {
         throw new ApiError(404, "No proposals found for this job");
@@ -93,6 +127,19 @@ const createProposal = asyncHandler(async (req, res) => {
 
     if (!jobPostId || !message || !deadline || !price) {
         throw new ApiError(400, "Missing required fields");
+    }
+
+    const existingProposal = await Proposal.findOne({
+        freelancerId: freelancer._id,
+        jobPostId,
+        status: "submitted",
+    });
+
+    if (existingProposal) {
+        throw new ApiError(
+            409,
+            "You have already submitted a proposal for this job"
+        );
     }
 
     const proposal = await Proposal.create({
@@ -167,8 +214,6 @@ const acceptProposal = asyncHandler(async (req, res) => {
     if (!proposal) throw new ApiError(404, "Proposal not found");
 
     const client = await Client.findClientByUserId(userId);
-    console.log(client._id);
-    console.log(proposal.jobPostId.clientId);
     if (!client || !proposal.jobPostId.clientId.equals(client._id)) {
         throw new ApiError(403, "Unauthorized to accept this proposal");
     }
@@ -177,18 +222,43 @@ const acceptProposal = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Proposal already accepted");
     }
 
+    const jobPostId = proposal.jobPostId._id;
+    const jobPost = await JobPost.findById(jobPostId);
+    if (!jobPost) {
+        throw new ApiError(404, "Job post not found");
+    }
+    if (jobPost.status !== "open") {
+        throw new ApiError(400, "Job post is not open for proposals");
+    }
+
     // Getting user's account
     const account = await Account.getAccountByUserId(userId);
     if (!account) {
         // Creating new account if not found
-        const account = await Account.create({ userId: userId, balance: 500 });
+        account = await Account.create({ userId: userId, balance: 500 });
     }
     if (account.balance < proposal.price) {
         throw new ApiError(400, "Not enough balance to pay for the proposal");
     }
 
+    // Deducting the amount from the client's account
+    account.balance -= proposal.price;
+    await account.save();
+
     proposal.status = "accepted";
     await proposal.save();
+
+    // Updating the status of the job post and other proposals:
+    jobPost.status = "assigned";
+    await jobPost.save();
+    const otherProposals = await Proposal.find({
+        jobPostId: jobPostId,
+        _id: { $ne: proposal._id },
+    });
+    otherProposals.forEach(async (otherProposal) => {
+        otherProposal.status = "rejected";
+        await otherProposal.save();
+    });
 
     // Creating project as proposal is now accepted
     const project = await Project.create({
@@ -205,6 +275,32 @@ const acceptProposal = asyncHandler(async (req, res) => {
     );
 });
 
+const getAppliedJobs = asyncHandler(async (req, res) => {
+    const freelancer = await Freelancer.findFreelancerByUserId(req.user._id);
+    if (!freelancer) {
+        throw new ApiError(403, "You are not authorized as a freelancer");
+    }
+
+    const proposals = await Proposal.find({
+        freelancerId: freelancer._id,
+        status: { $in: ["submitted", "accepted", "rejected"] },
+    }).populate({
+        path: "jobPostId",
+        populate: {
+            path: "clientId",
+            populate: {
+                path: "user",
+                select: "name email profilePicture", // optional: fields from User
+            },
+        },
+    });
+
+    const appliedJobs = proposals.map((proposal) => proposal.jobPostId);
+
+    res.status(200).json(
+        new ApiResponse(200, appliedJobs, "Applied jobs fetched successfully")
+    );
+});
 // TODO: Proposal withdraw and reject option
 
 module.exports = {
@@ -215,4 +311,5 @@ module.exports = {
     deleteProposal,
     acceptProposal,
     getProposalsByJobId,
+    getAppliedJobs,
 };
