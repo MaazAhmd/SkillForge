@@ -39,6 +39,7 @@ app.use('/download', downloadRoutes);
 
 app.use('/uploads/images', express.static(path.join(__dirname, 'uploads', 'images')));
 app.use('/uploads/files',  express.static(path.join(__dirname, 'uploads', 'files')));
+
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/accounts", accountRoutes);
 

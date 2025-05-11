@@ -7,34 +7,33 @@ import JobCard from "../components/Jobs/JobCard";
 import OngoingProjectCard from "../components/Jobs/OngoingProjectCard";
 import SendProposalModal from "../components/Jobs/SendProposalModal";
 import MessageCard from "../components/Jobs/MessageCard";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
-const messages = [
-    {
-        author: "Lord Magneto",
-        message: "It was nice talking to you my nigga. You are not...",
-        time: "14-April",
-        avatar: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2",
-    },
-];
-const ongoingProjects = [
-    {
-        title: "Creating a database using Postgres and development of a game development system...",
-        price: 5.5,
-        timeLeft: "2 hours",
-        author: {
-            name: "Maaz Ahmad",
-            avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2",
-        },
-    },
-];
+
 
 function JobDetail() {
     const { id } = useParams();
     const [job, setJob] = useState({});
     const [showModal, setShowModal] = useState(false);
     const [proposals, setProposals] = useState([]);
+    const navigate = useNavigate();
 
+    const handleStartChat = async () => {
+        try {
+          const res = await axios.get(`/chat/session`, {
+            params: { receiverId: job.clientId.user._id },
+          });
+    
+          if (res.data.success) {
+            const chatId = res.data.chatId;
+            navigate(`/chat/${chatId}`);
+          }
+        } catch (err) {
+          console.error('Failed to start chat', err);
+          alert('Could not initiate chat');
+        }
+      };
+    
     useEffect(() => {
         axios
             .get(`jobs/${id}`)
@@ -45,8 +44,8 @@ function JobDetail() {
             .get(`jobs/${id}/proposals`)
             .then((res) => setProposals(res.data.data))
             .catch((err) => console.log(err));
-    });
-
+    },[]);
+console.log(job, "job");
     return (
         <div className="min-h-screen lg:py-5 lg:px-8 md:py-3 md:px-5">
             <main className="max-w-7xl mx-auto px-4 py-6">
@@ -210,8 +209,11 @@ function JobDetail() {
 
                             {/* Send Message Button */}
                             <div className="mt-4">
-                                <button className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition">
-                                    Send Message
+                             <button
+                                onClick={handleStartChat}
+                                className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition"
+                                >
+                                Send Message
                                 </button>
                             </div>
                         </div>
