@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        role: { type: String, enum: ["client", "freelancer"] },
+        role: { type: String, enum: ["client", "freelancer", "admin"] },
         bio: { type: BioSchema, default: () => ({}) },
         profilePicture: String,
     },

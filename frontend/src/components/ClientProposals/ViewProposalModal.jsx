@@ -12,7 +12,6 @@ export default function ViewProposalModal({
     closeModal,
 }) {
     const dispatch = useDispatch();
-
     useEffect(() => {
         dispatch(fetchAccount());
     }, [dispatch]);

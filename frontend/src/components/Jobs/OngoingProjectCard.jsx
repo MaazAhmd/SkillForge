@@ -2,6 +2,7 @@ import { Timer } from 'lucide-react';
 import React from 'react';
 
 function OngoingProjectCard({ project }) {
+  console.log(project);
   return (
     <div className="rounded-lg p-3 mb-3">
       <h3 className="text-sm font-medium mb-2">{project.title}</h3>
@@ -15,11 +16,11 @@ function OngoingProjectCard({ project }) {
         </div>
         <div className="flex items-center space-x-2">
           <img
-            src={project.author.avatar}
-            alt={project.author.name}
+            src={project.author?.avatar}
+            alt={project.author?.name}
             className="w-6 h-6 rounded-full"
           />
-          <span className="text-sm text-gray-600">{project.author.name}</span>
+          <span className="text-sm text-gray-600">{project.author?.name}</span>
         </div>
       </div>
     </div>

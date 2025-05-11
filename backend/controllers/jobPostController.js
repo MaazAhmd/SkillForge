@@ -44,7 +44,6 @@ const getJobPosts = asyncHandler(async (req, res) => {
             limit = parsedLimit;
         }
     }
-    console.log(req.user);
     const sortOption =
         req.query?.sort === "desc"
             ? { createdAt: -1 }

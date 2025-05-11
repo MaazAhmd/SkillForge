@@ -22,7 +22,6 @@ const ChatListPage = () => {
       </div>
     );
   }
-
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-8">
       <h1 className="text-2xl font-bold mb-4">Chats</h1>
