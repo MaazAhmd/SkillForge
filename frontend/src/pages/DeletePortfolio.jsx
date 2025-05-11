@@ -5,14 +5,29 @@ import axios from '../api/axios';
 export default function DeletePortfolio() {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  
   const handleDelete = async () => {
-    try {
-      await axios.delete(`/portfolio/${id}`);
-      alert('Portfolio deleted successfully!');
-      navigate('/portfolios'); // Redirect to the portfolio list
-    } catch (err) {
-      console.error('Failed to delete portfolio:', err);
+    const token = localStorage.getItem('token'); // Retrieve the token from local storage
+    if (!token) {
+      alert('You are not authorized to perform this action.');
+      return;
+    }
+  
+    if (window.confirm('Are you sure you want to delete this portfolio?')) {
+      try {
+        console.log('Deleting portfolio with ID:', id);
+        const response = await axios.delete(`/portfolio/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+          },
+        });
+        console.log('Delete response:', response.data);
+        alert('Portfolio deleted successfully!');
+        navigate('/portfolios'); // Redirect to the portfolio list
+      } catch (err) {
+        console.error('Failed to delete portfolio:', err.response || err.message);
+        alert('Failed to delete portfolio. Please try again.');
+      }
     }
   };
 
