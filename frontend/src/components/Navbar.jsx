@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Mail, Bell, Settings, Menu, X } from "lucide-react";
+import { Mail, Bell, Settings, Menu, X, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import LogoutButton from "./LogoutButton";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -28,55 +29,55 @@ export function Navbar() {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8 ml-8">
-                        {user.role === "freelancer" && (
+                        {user?.role === "freelancer" && (
                             <Link
                                 to="/jobs"
-                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                             >
                                 Find Work
                             </Link>
                         )}
-                        {user.role === "client" && (
+                        {user?.role === "client" && (
                             <Link
                                 to="/jobs"
-                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                             >
                                 Posted Jobs
                             </Link>
                         )}
                         <Link
                             to="/projects"
-                            className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                            className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                         >
                             Projects
                         </Link>
 
-                        {user.role === "freelancer" && (
+                        {user?.role === "freelancer" && (
                             <Link
                                 to="/proposals"
-                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                             >
                                 Proposals
                             </Link>
                         )}
-                        {user.role === "client" && (
+                        {user?.role === "client" && (
                             <Link
                                 to="/postjob"
-                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                             >
                                 Post
                             </Link>
                         )}
                         <Link
                             to="/dashboard"
-                            className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                            className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                         >
                             Dashboard
                         </Link>
-                        {user.role === "freelancer" && (
+                        {user?.role === "freelancer" && (
                             <Link
                                 to="/addportfolio"
-                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                             >
                                 Portfolio
                             </Link>
@@ -85,18 +86,18 @@ export function Navbar() {
 
                     {/* Right Section */}
                     <div className="hidden md:flex items-center space-x-6">
-                        <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
                             <Mail className="w-5 h-5" />
                         </button>
-                        <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
                             <Settings className="w-5 h-5" />
                         </button>
-                        <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <Link className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
                             <Bell className="w-5 h-5" />
-                        </button>
+                        </Link>
                         <Link
                             to="/profile"
-                            className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-full transition-colors"
+                            className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-full transition-colors cursor-pointer"
                         >
                             <img
                                 src="https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg"
@@ -104,13 +105,14 @@ export function Navbar() {
                                 className="w-8 h-8 rounded-full"
                             />
                         </Link>
+                        <LogoutButton />
                     </div>
 
                     {/* Mobile Menu Button */}
                     <div className="md:hidden flex items-center">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                            className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
                             aria-expanded={isOpen}
                         >
                             {isOpen ? (

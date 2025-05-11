@@ -1,23 +1,24 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Login from "./routes/Login";
-import Signup from "./routes/Signup";
-import Home from "./routes/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Jobs from "./routes/Jobs";
-import MyProjects from "./routes/MyProjects";
-import Profile from "./routes/Profile";
-import JobDetail from "./routes/JobDetail";
-import ClientJobDetail from "./routes/ClientJobDetail";
-import ClientJobs from "./routes/ClientJobs";
-import { DashboardPage } from "./routes/Dashboard";
-import PostJob from "./routes/PostJob";
-import LogoutRoute from "./routes/Logout";
+import Jobs from "./pages/Jobs";
+import MyProjects from "./pages/MyProjects";
+import Profile from "./pages/Profile";
+import JobDetail from "./pages/JobDetail";
+import ClientJobDetail from "./pages/ClientJobDetail";
+import ClientJobs from "./pages/ClientJobs";
+import { DashboardPage } from "./pages/Dashboard";
+import PostJob from "./pages/PostJob";
+import LogoutRoute from "./pages/Logout";
 import { clearError } from "./redux/slices/authSlice";
 import { useEffect } from "react";
-import AddPortfolio from "./routes/AddPortfolio";
-import PortfolioDetail from "./routes/PortfolioDetail";
-import Proposals from "./routes/Proposals";
+import AddPortfolio from "./pages/AddPortfolio";
+import PortfolioDetail from "./pages/PortfolioDetail";
+import Proposals from "./pages/Proposals";
 import { useSelector, useDispatch } from "react-redux";
+
 function App() {
     const dispatch = useDispatch();
 
@@ -44,11 +45,7 @@ function App() {
                         path="/jobs"
                         element={
                             <ProtectedRoute>
-                                {user.role === "client" ? (
-                                    <ClientJobs />
-                                ) : (
-                                    <Jobs />
-                                )}
+                                {user?.role === "client" ? <ClientJobs /> : <Jobs />}
                             </ProtectedRoute>
                         }
                     />
@@ -56,7 +53,7 @@ function App() {
                         path="/jobs/:id"
                         element={
                             <ProtectedRoute>
-                                {user.role === "client" ? (
+                                {user?.role === "client" ? (
                                     <ClientJobDetail />
                                 ) : (
                                     <JobDetail />

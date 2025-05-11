@@ -7,7 +7,6 @@ export const fetchAppliedJobs = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const res = await axios.get("/jobs/applied");
-            console.log(res.data.data);
             return res.data.data;
         } catch (err) {
             return rejectWithValue(

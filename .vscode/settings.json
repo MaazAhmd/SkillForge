@@ -1,4 +1,18 @@
 {
-    "editor.colorDecorators": true,
-
+  "editor.colorDecorators": true,
+  "restoreTerminals.terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "client",
+          "commands": ["cd frontend", "npm run dev"]
+        },
+        {
+          "name": "server",
+          "commands": ["cd backend", "npm run dev"]
+        }
+      ]
+    }
+  ],
+  "restoreTerminals.runOnStartup": true
 }

@@ -11,7 +11,6 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, status, error } = useSelector((state) => state.auth);
-console.log(user, status, error, "user, status, error")
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -69,7 +68,7 @@ console.log(user, status, error, "user, status, error")
 
           <button
           type="submit"
-          className="w-full bg-primary text-white hover:brightness-90 py-2 rounded-xl hover:bg-opacity-90 transition"
+          className="w-full bg-primary text-white hover:brightness-90 py-2 rounded-xl hover:bg-opacity-90 transition cursor-pointer"
           disabled={status === "loading"}
         >
           {status === "loading" ? "Logging in..." : "LOGIN"}

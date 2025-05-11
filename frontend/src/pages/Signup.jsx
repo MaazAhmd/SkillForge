@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../redux/slices/authSlice";
 import { Link } from "react-router-dom";
-import '../index.css';
+import "../index.css";
 import RoleToggle from "../components/RoleToggle";
 import { useNavigate } from "react-router-dom";
 
@@ -11,19 +11,20 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("freelancer");
-  const [name, setName] = useState(""); 
-  
+  const [name, setName] = useState("");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const resultAction = await dispatch(registerUser({ name, email, password, role }));
-  
+    const resultAction = await dispatch(
+      registerUser({ name, email, password, role })
+    );
     if (registerUser.fulfilled.match(resultAction)) {
-      navigate('/'); 
+      navigate("/");
     }
-  };  
+  };
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <div className="py-8 px-4">
@@ -31,8 +32,10 @@ function SignUp() {
           className="text-white py-20 px-4 text-center rounded-xl bg-no-repeat bg-cover bg-center"
           style={{ backgroundImage: "url('/images/login_img.png')" }}
         >
-          <h1 className="text-4xl font-bold mb-2">Welcome back.</h1>
-          <p className="text-lg">Login to regain access to the World of Freelancers!</p>
+          <h1 className="text-4xl font-bold mb-2">Join Us Today!</h1>
+          <p className="text-lg">
+            Sign up to explore the World of Freelancers and start your journey!
+          </p>
         </div>
       </div>
 
@@ -55,17 +58,16 @@ function SignUp() {
             />
           </div>
           <div className="mb-4">
-          <label className="block text-gray-700 mb-1">Name</label>
-          <input
-            type="text"
-            placeholder="Your full name"
-            className="w-full px-4 py-3 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-
+            <label className="block text-gray-700 mb-1">Name</label>
+            <input
+              type="text"
+              placeholder="Your full name"
+              className="w-full px-4 py-3 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
 
           <div className="mb-4">
             <label className="block text-gray-700 mb-1">Password</label>
@@ -84,7 +86,7 @@ function SignUp() {
 
           <button
             type="submit"
-            className="w-full bg-primary text-white hover:brightness-90 py-2 rounded-xl hover:bg-opacity-90 transition mt-4"
+            className="w-full bg-primary text-white hover:brightness-90 py-2 rounded-xl hover:bg-opacity-90 transition mt-4 cursor-pointer"
             disabled={status === "loading"}
           >
             {status === "loading" ? "Signing up..." : "SIGN UP"}
@@ -95,8 +97,13 @@ function SignUp() {
           )}
 
           <p className="text-sm text-center mt-4">
-            <span className="font-bold text-gray-400">Already have an account?</span>{" "}
-            <Link to="/login" className="text-primary font-bold hover:underline">
+            <span className="font-bold text-gray-400">
+              Already have an account?
+            </span>{" "}
+            <Link
+              to="/login"
+              className="text-primary font-bold hover:underline"
+            >
               Login
             </Link>
           </p>

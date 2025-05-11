@@ -46,7 +46,6 @@ function Jobs() {
                 project.status != "cancelled"
         )
     );
-    console.log(ongoingProjects);
 
     useEffect(() => {
         dispatch(fetchJobs());

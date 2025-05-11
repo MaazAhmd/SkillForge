@@ -11,7 +11,6 @@ export default function ProfileCards() {
       try {
         const { data } = await axios.get('/portfolio');
         setProjects(data);
-        console.log(data);
       } catch (err) {
         console.error('Failed to load portfolios:', err);
       }

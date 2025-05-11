@@ -46,7 +46,6 @@ function JobDetail() {
             .then((res) => setProposals(res.data.data))
             .catch((err) => console.log(err));
     });
-    console.log(job);
 
     return (
         <div className="min-h-screen lg:py-5 lg:px-8 md:py-3 md:px-5">
