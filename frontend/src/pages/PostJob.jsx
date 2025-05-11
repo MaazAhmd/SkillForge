@@ -4,6 +4,7 @@ import TagInput from "../components/TagInput";
 import { postJob, resetJobState } from "../redux/slices/jobSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 function PostJob() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ function PostJob() {
     previews: [],
     category: "",
   });
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState(null);
   const { loading, error, success } = useSelector((state) => state.job);
@@ -75,6 +77,9 @@ function PostJob() {
         category: "",
       });
       dispatch(resetJobState());
+      setTimeout(() => {
+        navigate("/jobs");
+      }, 2000);
     }
 
     if (error) {
@@ -173,9 +178,10 @@ function PostJob() {
                 </label>
                 <TagInput
                   tags={formData.skills}
-                  onChange={(tags) =>
-                    setFormData((prev) => ({ ...prev, skills: tags }))
-                  }
+                  onChange={(tags) => {
+                    const uniqueTags = [...new Set(tags)];
+                    setFormData((prev) => ({ ...prev, skills: uniqueTags }));
+                  }}
                   required
                 />
               </div>

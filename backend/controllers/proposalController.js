@@ -105,7 +105,7 @@ const getProposalsByJobId = asyncHandler(async (req, res) => {
     }
 
     if (!proposals || proposals.length === 0) {
-        throw new ApiError(404, "No proposals found for this job");
+        throw new ApiError(200, "No proposals found for this job");
     }
 
     res.status(200).json(

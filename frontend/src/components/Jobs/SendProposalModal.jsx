@@ -20,16 +20,14 @@ const SendProposalModal = ({ job, onClose }) => {
             .post("/proposals/create", proposalData)
             .then((res) => {
                 if (res.status >= 200 && res.status < 300) {
-                    alert("Proposal submitted!");
+                    setNotification({ type: "success", message: "Proposal successfully submitted!" });
                     onClose();
                 } else {
-                    console.log(res);
-                    alert("Failed to submit proposal.");
+                    setNotification({ type: "error", message: "Failed to submit proposal." });
                 }
             })
             .catch((err) => {
-                console.log(err.response.data);
-                alert("Failed to submit proposal." + err.response.data.message);
+                setNotification({ type: "error", message: "Failed to submit proposal." });
             });
     };
     return (
