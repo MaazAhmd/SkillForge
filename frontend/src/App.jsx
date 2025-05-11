@@ -11,6 +11,7 @@ import ClientJobDetail from "./pages/ClientJobDetail";
 import ClientJobs from "./pages/ClientJobs";
 import { DashboardPage } from "./pages/Dashboard";
 import PostJob from "./pages/PostJob";
+
 import LogoutRoute from "./pages/Logout";
 import { clearError } from "./redux/slices/authSlice";
 import { useEffect } from "react";
@@ -21,6 +22,7 @@ import ChatListPage from "./pages/ChatListPage";
 import ChatSessionPage from "./pages/ChatSessionPage";
 import Proposals from "./pages/Proposals";
 import { useSelector, useDispatch } from "react-redux";
+import DepositFunds from "./pages/DepositFunds";
 
 function App() {
     const dispatch = useDispatch();
@@ -97,6 +99,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <DashboardPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/deposit-funds"
+                        element={
+                            <ProtectedRoute>
+                                <DepositFunds />
                             </ProtectedRoute>
                         }
                     />
