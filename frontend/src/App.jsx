@@ -4,7 +4,7 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Jobs from "./pages/Jobs";
-import MyProjects from "./pages/MyProjects";
+import MyProjects from "./pages/FreelancerProjects";
 import Profile from "./pages/Profile";
 import JobDetail from "./pages/JobDetail";
 import ClientJobDetail from "./pages/ClientJobDetail";
@@ -16,9 +16,9 @@ import { clearError } from "./redux/slices/authSlice";
 import { useEffect } from "react";
 import AddPortfolio from "./pages/AddPortfolio";
 import PortfolioDetail from "./pages/PortfolioDetail";
-import ChatPage from "./routes/ChatSessionPage";
-import ChatListPage from "./routes/ChatListPage";
-import ChatSessionPage from "./routes/ChatSessionPage";
+import ChatPage from "./pages/ChatSessionPage";
+import ChatListPage from "./pages/ChatListPage";
+import ChatSessionPage from "./pages/ChatSessionPage";
 import Proposals from "./pages/Proposals";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -48,7 +48,11 @@ function App() {
                         path="/jobs"
                         element={
                             <ProtectedRoute>
-                                {user?.role === "client" ? <ClientJobs /> : <Jobs />}
+                                {user?.role === "client" ? (
+                                    <ClientJobs />
+                                ) : (
+                                    <Jobs />
+                                )}
                             </ProtectedRoute>
                         }
                     />
@@ -110,25 +114,25 @@ function App() {
                             <ProtectedRoute>
                                 <AddPortfolio />
                             </ProtectedRoute>
-    }
-  />
-    <Route
-        path="/chats"
-        element={
-          <ProtectedRoute>
-            <ChatListPage />
-          </ProtectedRoute>
-        }
-      />
+                        }
+                    />
+                    <Route
+                        path="/chats"
+                        element={
+                            <ProtectedRoute>
+                                <ChatListPage />
+                            </ProtectedRoute>
+                        }
+                    />
 
-      <Route
-        path="/chat/:chatId"
-        element={
-          <ProtectedRoute>
-            <ChatSessionPage />
-          </ProtectedRoute>
-                            }
-                        />
+                    <Route
+                        path="/chat/:chatId"
+                        element={
+                            <ProtectedRoute>
+                                <ChatSessionPage />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route
                         path="/portfolios/:id"
                         element={
@@ -137,9 +141,8 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                  
-      
-  <Route path="/logout" element={<LogoutRoute />} />
+
+                    <Route path="/logout" element={<LogoutRoute />} />
                 </Routes>
             </div>
         </Router>

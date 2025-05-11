@@ -1,11 +1,17 @@
 import React from "react";
-import JobCard from "../Jobs/JobCard";
+import ProjectCard from "./ProjectCard";
 import { Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 
-function TabContent({ activeTab, jobs }) {
+function TabContent({ activeTab, projects }) {
     const loading = useSelector((state) => state.project.loading);
     const error = useSelector((state) => state.project.error);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // End of today
+
+    const isDueTodayOrPast = (date) => {
+        return new Date(date) <= today;
+    };
 
     if (activeTab === "active") {
         return (
@@ -20,17 +26,19 @@ function TabContent({ activeTab, jobs }) {
                         <h5>
                             An error occurred while fetching the projects...
                         </h5>
-                    ) : jobs && jobs.length > 0 ? (
-                        jobs
-                            .filter((job) => job.dueType === "today")
-                            .map((job) => (
-                                <div key={job.id} className="mb-5">
-                                    <JobCard activeTab={activeTab} job={job} />
+                    ) : projects && projects.length > 0 ? (
+                        projects
+                            .filter((project) =>
+                                isDueTodayOrPast(project.deadline)
+                            )
+                            .map((project) => (
+                                <div key={project._id} className="mb-5">
+                                    <ProjectCard project={project} />
                                 </div>
                             ))
                     ) : (
                         <h5 className="text-gray-400 py-8 my-8 text-center">
-                            No projects due in the next 5 days.
+                            No projects due today.
                         </h5>
                     )}
                 </div>
@@ -46,12 +54,17 @@ function TabContent({ activeTab, jobs }) {
                         <h5>
                             An error occurred while fetching the projects...
                         </h5>
-                    ) : jobs && jobs.length > 0 ? (
-                        jobs
-                            .filter((job) => job.dueType === "today")
-                            .map((job) => (
-                                <div key={job.id} className="mb-5">
-                                    <JobCard activeTab={activeTab} job={job} />
+                    ) : projects && projects.length > 0 ? (
+                        projects
+                            .filter(
+                                (project) => !isDueTodayOrPast(project.deadline)
+                            )
+                            .map((project) => (
+                                <div key={project._id} className="mb-5">
+                                    <ProjectCard
+                                        activeTab={activeTab}
+                                        project={project}
+                                    />
                                 </div>
                             ))
                     ) : (
@@ -74,16 +87,19 @@ function TabContent({ activeTab, jobs }) {
                         <h5>
                             An error occurred while fetching the projects...
                         </h5>
-                    ) : jobs && jobs.length > 0 ? (
-                        jobs
+                    ) : projects && projects.length > 0 ? (
+                        projects
                             .filter(
-                                (job) =>
-                                    job.status === "completed" ||
-                                    job.status === "completed-not-reviewed"
+                                (project) =>
+                                    project.status === "completed" ||
+                                    project.status === "completed-not-reviewed"
                             )
-                            .map((job) => (
-                                <div key={job.id} className="mb-5">
-                                    <JobCard activeTab={activeTab} job={job} />
+                            .map((project) => (
+                                <div key={project._id} className="mb-5">
+                                    <ProjectCard
+                                        activeTab={activeTab}
+                                        project={project}
+                                    />
                                 </div>
                             ))
                     ) : (

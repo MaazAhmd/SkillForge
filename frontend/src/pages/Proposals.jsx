@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Calendar, Filter } from "lucide-react";
-import TabContent from "../components/MyProjects/TabContent";
-import Tabs from "../components/MyProjects/Tabs";
+import TabContent from "../components/FreelancerProjects/TabContent";
+import Tabs from "../components/FreelancerProjects/Tabs";
 import { FilterX, CheckCircle2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAppliedJobs } from "../redux/slices/appliedJobsSlice";

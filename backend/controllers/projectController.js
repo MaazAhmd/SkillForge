@@ -21,9 +21,20 @@ const getProjects = asyncHandler(async (req, res) => {
         query.freelancerId = freelancer._id;
     }
 
-    const projects = await Project.find(query).populate(
-        "freelancerId clientId jobPostId proposalId reviewId"
-    );
+    const projects = await Project.find(query).populate([
+        { path: "freelancerId" },
+        {
+            path: "clientId",
+            populate: {
+                path: "user",
+                select: "-email -password -createdAt",
+            },
+        },
+        { path: "jobPostId" },
+        { path: "proposalId" },
+        { path: "reviewId" },
+    ]);
+
     res.status(200).json(new ApiResponse(200, projects));
 });
 
@@ -169,7 +180,10 @@ const markCompleted = asyncHandler(async (req, res) => {
     }
 
     if (project.status !== "delivered") {
-        throw new ApiError(409, "Project is not delivered yet or is already completed");
+        throw new ApiError(
+            409,
+            "Project is not delivered yet or is already completed"
+        );
     }
 
     project.status = "completed-not-reviewed";

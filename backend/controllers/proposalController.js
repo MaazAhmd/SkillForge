@@ -248,9 +248,17 @@ const acceptProposal = asyncHandler(async (req, res) => {
     proposal.status = "accepted";
     await proposal.save();
 
-    // Updating the status of the job post:
+    // Updating the status of the job post and other proposals:
     jobPost.status = "assigned";
     await jobPost.save();
+    const otherProposals = await Proposal.find({
+        jobPostId: jobPostId,
+        _id: { $ne: proposal._id },
+    });
+    otherProposals.forEach(async (otherProposal) => {
+        otherProposal.status = "rejected";
+        await otherProposal.save();
+    });
 
     // Creating project as proposal is now accepted
     const project = await Project.create({

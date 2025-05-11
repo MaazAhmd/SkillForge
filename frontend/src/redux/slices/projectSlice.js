@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios from "../../api/axios"; // Adjust the path as necessary
 
 // Thunk to fetch active projects
 export const fetchActiveProjects = createAsyncThunk(
