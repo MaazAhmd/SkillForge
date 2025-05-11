@@ -17,7 +17,7 @@ const ChatSessionPage = () => {
   const session = chats.find((c) => c._id === chatId);
 
   const [input, setInput] = useState('');
-  const [attachmentData, setAttachmentData] = useState(null);
+  const [attachmentData, setAttachmentData] = useState(null); // { file, name }
   const [showPicker, setShowPicker] = useState(false);
   const messagesEndRef = useRef(null);
 
@@ -41,6 +41,7 @@ const ChatSessionPage = () => {
     return () => socket.off('receiveMessage', handler);
   }, [chatId, dispatch]);
 
+  // Scroll to the bottom whenever messages are updated
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [session?.messages]);
@@ -108,6 +109,13 @@ const ChatSessionPage = () => {
     return url.replace('/uploads/', '/download/');
   }
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAttachmentData({ file, name: file.name });
+    }
+  };
+
   return (
     <div className="chat-session">
       {/* Header */}
@@ -160,7 +168,7 @@ const ChatSessionPage = () => {
                       href={convertToDownloadUrl(attachmentUrl)}
                       className="download-link"
                     >
-                      Download
+                      Download File
                     </a>
                   </>
                 )}
@@ -193,6 +201,16 @@ const ChatSessionPage = () => {
         )}
 
         <div className="input-container">
+          <label htmlFor="file-input" className="emoji-button">
+            <Paperclip className="emoji-icon" />
+          </label>
+          <input
+            id="file-input"
+            type="file"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+
           <button
             onClick={() => setShowPicker((v) => !v)}
             className="emoji-button"
