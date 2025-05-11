@@ -34,9 +34,15 @@ exports.createChatMessage = async (req, res) => {
   const [user1, user2] = orderedPair(me, other);
   const { content }    = req.body;
 
-  const attachment = req.file 
-    ? `http://localhost:5000/uploads/${req.body.mode === 'file' ? 'files' : 'images'}/${req.file.filename}`  
-    : null;
+  let attachment = null;
+  if (req.file) {
+    const mode = req.body.mode === 'file' ? 'files' : 'images';
+    attachment = {
+      url: `http://localhost:5000/uploads/${mode}/${req.file.filename}`,
+      name: req.file.originalname || req.file.filename
+    };
+  }
+  
 
   let chat = await ChatSession.findOne({ user1, user2 });
   if (!chat) {
@@ -125,3 +131,16 @@ exports.getChatById = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+exports.getChatById = async  (req, res) => {
+  const { type, filename } = req.params;
+
+  const folder = type === 'files' ? 'files' : 'images'; 
+  const filePath = path.join(__dirname, '..', 'uploads', folder, filename);
+
+  res.download(filePath, filename, (err) => {
+    if (err) {
+      console.error('Download error:', err);
+      res.status(404).json({ error: 'File not found' });
+    }
+  });
+}

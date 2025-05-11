@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body > 
+    
+    <div style="display: flex; justify-content: center; align-items: center;height: 70vh; flex-direction: column;">
+        <div>
+  <input type="text" id="nameInput" placeholder="Enter name" >
+  <button id="addButton" >Add Name</button></div>
+  <ul style="margin-left: -15%;" id="nameList"></ul>   
+</div>
+ 
+
+
+</body>
+<script>
+    var nameInput =document.getElementById("nameInput");
+    var addButton  =document.getElementById("addButton");
+    var nameList = document.getElementById("nameList");
+
+    addButton.addEventListener("click", function() {
+      var name = nameInput.value;
+
+      if (name !== "") {
+    var li = document.createElement("li");
+     li.textContent = name;
+        nameList.appendChild(li);
+            nameInput.value = "";
+      }
+      else {
+        alert("Please enter a name");
+      }
+    });
+  </script>
+</html>

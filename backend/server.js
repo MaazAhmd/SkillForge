@@ -24,7 +24,7 @@ const proposalRoutes = require("./routes/proposalRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const chatRoutes = require("./routes/chatRoutes");
-
+const downloadRoutes = require('./routes/downloadRoutes');
 const errorHandler = require("./middlewares/errorHandler");
 
 app.use("/api/users", authRoutes);
@@ -33,6 +33,7 @@ app.use("/api/proposals", proposalRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/chat", chatRoutes);
+app.use('/download', downloadRoutes);
 
 app.use('/uploads/images', express.static(path.join(__dirname, 'uploads', 'images')));
 app.use('/uploads/files',  express.static(path.join(__dirname, 'uploads', 'files')));

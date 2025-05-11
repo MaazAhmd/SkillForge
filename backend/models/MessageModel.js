@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 const MessageSchema = new mongoose.Schema({
   sender:     { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   content:    String,
-  attachment: String,
-  timestamp:  { type: Date, default: Date.now },
+  attachment: {
+    url: String,
+    name: String
+  },
+    timestamp:  { type: Date, default: Date.now },
 });
 
 const ChatSessionSchema = new mongoose.Schema({
