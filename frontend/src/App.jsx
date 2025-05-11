@@ -16,6 +16,9 @@ import { clearError } from "./redux/slices/authSlice";
 import { useEffect } from "react";
 import AddPortfolio from "./pages/AddPortfolio";
 import PortfolioDetail from "./pages/PortfolioDetail";
+import ChatPage from "./routes/ChatSessionPage";
+import ChatListPage from "./routes/ChatListPage";
+import ChatSessionPage from "./routes/ChatSessionPage";
 import Proposals from "./pages/Proposals";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -107,8 +110,25 @@ function App() {
                             <ProtectedRoute>
                                 <AddPortfolio />
                             </ProtectedRoute>
-                        }
-                    />
+    }
+  />
+    <Route
+        path="/chats"
+        element={
+          <ProtectedRoute>
+            <ChatListPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/chat/:chatId"
+        element={
+          <ProtectedRoute>
+            <ChatSessionPage />
+          </ProtectedRoute>
+                            }
+                        />
                     <Route
                         path="/portfolios/:id"
                         element={
@@ -117,7 +137,9 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/logout" element={<LogoutRoute />} />
+                  
+      
+  <Route path="/logout" element={<LogoutRoute />} />
                 </Routes>
             </div>
         </Router>

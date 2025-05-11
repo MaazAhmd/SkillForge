@@ -16,7 +16,7 @@ const {
     getAppliedJobs,
 } = require("../controllers/proposalController");
 
-router.get("/", getJobPosts);
+router.get("/",verifyToken, getJobPosts);
 router.get(
     "/applied",
     verifyToken,

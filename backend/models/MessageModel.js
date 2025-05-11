@@ -1,14 +1,21 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+
 const MessageSchema = new mongoose.Schema({
-    timestamp: Date,
-    content: String,
-    attachment: String,
+  sender:     { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  content:    String,
+  attachment: String,
+  timestamp:  { type: Date, default: Date.now },
 });
 
 const ChatSessionSchema = new mongoose.Schema({
-    messages: [MessageSchema],
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-});
+  user1: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  user2: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  messages: [MessageSchema],
+}, { timestamps: true });
 
-module.exports = mongoose.model("ChatSession", ChatSessionSchema);
+ChatSessionSchema.index(
+  { user1: 1, user2: 1 },
+  { unique: true, partialFilterExpression: { user1: { $exists: true }, user2: { $exists: true } } }
+);
+
+module.exports = mongoose.model('ChatSession', ChatSessionSchema);

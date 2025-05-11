@@ -7,7 +7,7 @@ import appliedJobsReducer from "./slices/appliedJobsSlice";
 import proposalsReducer from "./slices/proposalsSlice";
 import clientJobsReducer from "./slices/clientJobsSlice";
 import accountReducer from "./slices/accountSlice";
-
+import chatReducer from './slices/chatSlice';
 const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -18,7 +18,8 @@ const store = configureStore({
         proposals: proposalsReducer,
         clientJobs: clientJobsReducer,
         account: accountReducer,
-    },
+      chat: chatReducer,
+  },
 });
 
 export default store;
