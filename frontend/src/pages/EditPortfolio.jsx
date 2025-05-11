@@ -1,216 +1,272 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
+import { Upload, X, Loader } from 'lucide-react';
+import TagInput from '../components/TagInput';
 
 export default function EditPortfolio() {
-  const { id } = useParams(); // Get the portfolio ID from the URL
-  const navigate = useNavigate(); // For navigation after successful edit
-  const [formData, setFormData] = useState({
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  // form state
+  const [form, setForm] = useState({
     title: '',
     description: '',
+    skills: [],        // array for TagInput
     price: '',
-    skills: '',
-    images: [], // Array to store existing image URLs
+    existingImages: [],// URLs
+    newFiles: [],      // File[]
+    newPreviews: []    // blob URLs
   });
-  const [newImages, setNewImages] = useState([]); // Array to store new image files
-  const [newImagePreviews, setNewImagePreviews] = useState([]); // Array to store previews of new images
-  const [loading, setLoading] = useState(true);
 
+  // notifications
+  const [notification, setNotification] = useState(null);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [loadingFetch, setLoadingFetch] = useState(true);
+
+  // fetch existing portfolio
   useEffect(() => {
-    // Fetch the existing portfolio data
-    const fetchPortfolio = async () => {
+    (async () => {
       try {
         const { data } = await axios.get(`/portfolio/${id}`);
-        setFormData({
+        setForm({
           title: data.title,
           description: data.description,
           price: data.price,
-          skills: data.skills.join(', '), // Convert skills array to a comma-separated string
-          images: data.imageUrls || [], // Store existing image URLs
+          skills: data.skills,
+          existingImages: data.imageUrls || [],
+          newFiles: [],
+          newPreviews: []
         });
       } catch (err) {
-        console.error('Failed to fetch portfolio:', err);
+        setNotification({ type: 'error', message: 'Failed to load portfolio.' });
       } finally {
-        setLoading(false);
+        setLoadingFetch(false);
       }
-    };
-    fetchPortfolio();
+    })();
   }, [id]);
 
+  // handle field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setForm(f => ({ ...f, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setNewImages(files); // Store the selected image files
-
-    // Generate previews for the selected images
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setNewImagePreviews(previews);
+  const handleSkillsChange = (tags) => {
+    setForm(f => ({ ...f, skills: tags }));
   };
 
-  const handleRemoveImage = (index) => {
-    // Remove the image at the specified index from existing images
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
+  const handleNewFiles = (e) => {
+    const files = Array.from(e.target.files || []);
+    const previews = files.map(f => URL.createObjectURL(f));
+    setForm(f => ({
+      ...f,
+      newFiles: [...f.newFiles, ...files],
+      newPreviews: [...f.newPreviews, ...previews]
+    }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeExisting = (idx) => {
+    setForm(f => ({
+      ...f,
+      existingImages: f.existingImages.filter((_, i) => i !== idx)
     }));
   };
 
-  const handleRemoveNewImage = (index) => {
-    // Remove the image at the specified index from new images
-    setNewImages((prev) => prev.filter((_, i) => i !== index));
-    setNewImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  const removeNew = (idx) => {
+    setForm(f => {
+      URL.revokeObjectURL(f.newPreviews[idx]);
+      return {
+        ...f,
+        newFiles: f.newFiles.filter((_, i) => i !== idx),
+        newPreviews: f.newPreviews.filter((_, i) => i !== idx)
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const updatedData = {
-      ...formData,
-      skills: formData.skills.split(',').map((skill) => skill.trim()), // Convert skills back to an array
-    };
+    if (!form.title || !form.price ) {
+      setNotification({ type: 'error', message: 'Please fill all required fields.' });
+      return;
+    }
+
+    setLoadingSubmit(true);
+    setNotification(null);
 
     try {
-      // Upload new images if any
-      let uploadedImageUrls = [];
-      if (newImages.length > 0) {
-        const formData = new FormData();
-        newImages.forEach((image) => formData.append('images', image));
-
-        const { data } = await axios.post(`/portfolio/${id}/upload-images`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        uploadedImageUrls = data.imageUrls; // Get the uploaded image URLs from the response
+      let uploadedUrls = [];
+      if (form.newFiles.length) {
+        const fd = new FormData();
+        form.newFiles.forEach(f => fd.append('images', f));
+        const { data } = await axios.post(
+          `/portfolio/${id}/upload-images`,
+          fd,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+        uploadedUrls = data.imageUrls;
       }
 
-      // Update the portfolio with new data and image URLs
       await axios.put(`/portfolio/${id}`, {
-        ...updatedData,
-        imageUrls: [...formData.images, ...uploadedImageUrls], // Combine existing and new image URLs
+        title: form.title,
+        description: form.description,
+        price: form.price,
+        skills: form.skills,
+        imageUrls: [...form.existingImages, ...uploadedUrls]
       });
 
-      alert('Portfolio updated successfully!');
-      navigate(`/portfolios/${id}`); // Redirect to the portfolio details page
+      setNotification({ type: 'success', message: 'Portfolio updated!' });
+      setForm(f => ({
+        ...f,
+        newFiles: [],
+        newPreviews: []
+      }));
+      setTimeout(() => navigate(`/portfolios/${id}`), 1000);
+
     } catch (err) {
-      console.error('Failed to update portfolio:', err);
+      setNotification({ type: 'error', message: 'Update failed. Please try again.' });
+    } finally {
+      setLoadingSubmit(false);
     }
   };
 
-  if (loading) {
+  if (loadingFetch) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
-        <p>Loading...</p>
+        <Loader className="w-6 h-6 animate-spin text-gray-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h1 className="text-2xl font-bold text-primary mb-6">Edit Portfolio</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Title</label>
+    <div className="p-6 lg:p-10 min-h-screen bg-[#f9fafb]">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow"
+      >
+        <h2 className="text-2xl font-semibold mb-6">Edit Portfolio Work</h2>
+
+        {notification && (
+          <div
+            className={`mb-6 p-4 rounded-lg ${
+              notification.type === 'success'
+                ? 'bg-green-50 text-green-800'
+                : 'bg-red-50 text-red-800'
+            }`}
+          >
+            {notification.message}
+          </div>
+        )}
+
+        {/* Title & Price */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Title *</label>
             <input
-              type="text"
               name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              rows="4"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Price</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Skills (comma-separated)</label>
-            <input
               type="text"
-              name="skills"
-              value={formData.skills}
+              value={form.title}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
               required
+              className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-transparent"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Existing Images</label>
-            <div className="flex flex-wrap gap-2">
-              {formData.images.map((url, i) => (
-                <div key={i} className="relative">
-                  <img
-                    src={url}
-                    alt={`Portfolio Image ${i + 1}`}
-                    className="w-20 h-20 object-cover rounded-lg border"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(i)}
-                    className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Upload New Images</label>
+          <div>
+            <label className="block text-sm font-medium mb-1">Price (USD) *</label>
             <input
-              type="file"
-              multiple
-              onChange={handleImageChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
+              name="price"
+              type="number"
+              value={form.price}
+              onChange={handleChange}
+              required
+              className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-transparent"
             />
-            <div className="flex flex-wrap gap-2 mt-2">
-              {newImagePreviews.map((preview, i) => (
-                <div key={i} className="relative">
-                  <img
-                    src={preview}
-                    alt={`New Image ${i + 1}`}
-                    className="w-20 h-20 object-cover rounded-lg border"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveNewImage(i)}
-                    className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
           </div>
+        </div>
+
+        {/* Description */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Description</label>
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-3 py-2 text-sm h-32 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-transparent"
+          />
+        </div>
+
+        {/* Skills */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Skills *</label>
+          <TagInput tags={form.skills} onChange={handleSkillsChange} />
+        </div>
+
+        {/* Existing Images */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Existing Images</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {form.existingImages.map((url, i) => (
+              <div key={i} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeExisting(i)}
+                  className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Upload New Images */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium mb-1">Upload New Images</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {form.newPreviews.map((src, i) => (
+              <div key={i} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100">
+                <img src={src} alt="" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeNew(i)}
+                  className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+
+            <label className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-primary transition">
+              <Upload className="w-8 h-8 text-gray-400 mb-1" />
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleNewFiles}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Submit */}
+        <div className="text-right">
           <button
             type="submit"
-            className="bg-primary text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+            disabled={loadingSubmit}
+            className="bg-primary cursor-pointer text-white px-6 py-2 rounded-md flex items-center gap-2 disabled:opacity-50"
           >
-            Save Changes
+            {loadingSubmit
+              ? <Loader className="w-4 h-4 animate-spin" />
+              : <Upload className="w-4 h-4" />}
+            <span>{loadingSubmit ? 'Saving...' : 'Save Changes'}</span>
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }

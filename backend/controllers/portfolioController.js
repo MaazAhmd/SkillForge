@@ -1,4 +1,6 @@
 const PortfolioItem = require('../models/PortfolioModel');
+const path=require('path');
+const fs   = require('fs').promises;
 
 // Create new portfolio item
 exports.createPortfolio = async (req, res) => {
@@ -88,26 +90,28 @@ exports.updatePortfolio = async (req, res) => {
 // Delete portfolio item
 exports.deletePortfolio = async (req, res) => {
   try {
+    // 1) Find the portfolio
     const portfolio = await PortfolioItem.findById(req.params.id);
-
     if (!portfolio) {
       return res.status(404).json({ message: 'Portfolio item not found' });
     }
 
-    // Optionally delete images from the server
-    // Uncomment the following lines if you want to delete images from the filesystem
-    /*
-    const fs = require('fs');
-    portfolio.imageUrls.forEach((url) => {
-      const filePath = url.replace('http://localhost:5000/uploads/', './uploads/');
-      fs.unlink(filePath, (err) => {
-        if (err) console.error('Failed to delete image:', err);
-      });
-    });
-    */
+    const deleteOps = portfolio.imageUrls.map((url) => {
+      const filename = path.basename(url);
+      const filePath = path.join(__dirname, '..', 'uploads', 'images', filename);
 
-    await portfolio.remove(); // Remove the portfolio from the database
+      return fs.unlink(filePath)
+        .catch((err) => {
+          console.error(`Failed to delete image ${filePath}:`, err);
+        });
+    });
+
+    await Promise.all(deleteOps);
+
+    await PortfolioItem.findByIdAndDelete(req.params.id);
+
     res.status(200).json({ message: 'Portfolio item deleted successfully' });
+
   } catch (err) {
     console.error('Failed to delete portfolio:', err);
     res.status(500).json({ message: 'Failed to delete portfolio item' });

@@ -33,11 +33,10 @@ router.put(
   '/:id',
   verifyToken,
   authorizeRoles('freelancer'),
-  upload.array('images', 6), // Allow up to 6 new images
+  upload.array('images', 6), 
   updatePortfolio
 );
 
-// Delete a portfolio by ID
 router.delete(
   '/:id',
   verifyToken,
