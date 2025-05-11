@@ -7,6 +7,7 @@ import axios from '../api/axios';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
 import { Paperclip, Smile, Send } from 'lucide-react';
+import './ChatSessionPage.css'; // Import the CSS file
 
 const ChatSessionPage = () => {
   const { chatId } = useParams();
@@ -44,7 +45,7 @@ const ChatSessionPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [session?.messages]);
 
-  if (!session) return <div className="p-4">Loading chat…</div>;
+  if (!session) return <div className="loading">Loading chat…</div>;
 
   const other = session.user1._id === user._id ? session.user2 : session.user1;
 
@@ -108,22 +109,22 @@ const ChatSessionPage = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="chat-session">
       {/* Header */}
-      <div className="flex items-center p-4 bg-white shadow-md sticky top-0 z-10">
+      <div className="chat-header">
         <img
           src={other.profilePicture}
           alt={other.name}
-          className="w-12 h-12 rounded-full mr-3"
+          className="profile-picture"
         />
         <div>
-          <h2 className="text-lg font-semibold">{other.name}</h2>
-          <p className="text-sm text-gray-500">Last seen 2 hours ago</p>
+          <h2 className="chat-name">{other.name}</h2>
+          <p className="chat-last-seen">Last seen 2 hours ago</p>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="chat-messages">
         {session.messages.map((msg) => {
           const isMine = msg.sender._id === user._id;
           const attachmentUrl = msg.attachment?.url;
@@ -132,18 +133,14 @@ const ChatSessionPage = () => {
           return (
             <div
               key={msg._id}
-              className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
+              className={`chat-message ${isMine ? 'mine' : 'theirs'}`}
             >
-              <div
-                className={`p-4 rounded-lg max-w-xs break-words shadow ${
-                  isMine ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                }`}
-              >
+              <div className={`message-bubble ${isMine ? 'mine' : 'theirs'}`}>
                 {!isMine && (
-                  <p className="text-xs font-semibold mb-1">{msg.sender.name}</p>
+                  <p className="sender-name">{msg.sender.name}</p>
                 )}
 
-                {msg.content && <p className="text-sm">{msg.content}</p>}
+                {msg.content && <p className="message-content">{msg.content}</p>}
 
                 {attachmentUrl && (
                   <>
@@ -151,25 +148,28 @@ const ChatSessionPage = () => {
                       <img
                         src={attachmentUrl}
                         alt={attachmentName || 'attachment'}
-                        className="mt-2 max-w-full rounded"
+                        className="message-image"
                       />
                     ) : (
-                      <div className="mt-2 p-2 bg-white text-gray-700 rounded shadow flex items-center">
-                        <Paperclip className="w-6 h-6 text-gray-600 mr-2" />
-                        <p className="text-sm">{attachmentName || 'File'}</p>
+                      <div className="attachment">
+                        <Paperclip className="attachment-icon" />
+                        <p className="attachment-name">{attachmentName || 'File'}</p>
                       </div>
                     )}
                     <a
                       href={convertToDownloadUrl(attachmentUrl)}
-                      className="mt-1 inline-block text-sm text-blue-600 underline"
+                      className="download-link"
                     >
                       Download
                     </a>
                   </>
                 )}
 
-                <p className="text-xs text-gray-500 mt-1">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
+                <p className={`message-time ${isMine ? 'mine' : 'theirs'}`}>
+                  {new Date(msg.timestamp).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
                 </p>
               </div>
             </div>
@@ -179,28 +179,28 @@ const ChatSessionPage = () => {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-white shadow-md sticky bottom-0 z-10">
+      <div className="chat-input">
         {attachmentData && (
-          <div className="mb-2 flex items-center bg-gray-100 p-2 rounded">
-            <span className="flex-1 text-sm">{attachmentData.file.name}</span>
+          <div className="attachment-preview">
+            <span className="attachment-name">{attachmentData.file.name}</span>
             <button
               onClick={() => setAttachmentData(null)}
-              className="text-gray-600 hover:text-gray-800"
+              className="remove-attachment"
             >
               ×
             </button>
           </div>
         )}
 
-        <div className="flex items-center">
+        <div className="input-container">
           <button
             onClick={() => setShowPicker((v) => !v)}
-            className="mr-2 p-2 rounded-full hover:bg-gray-200"
+            className="emoji-button"
           >
-            <Smile className="w-6 h-6 text-gray-600" />
+            <Smile className="emoji-icon" />
           </button>
           {showPicker && (
-            <div className="absolute bottom-16 left-4 z-10">
+            <div className="emoji-picker">
               <Picker
                 data={data}
                 onEmojiSelect={(e) => {
@@ -213,7 +213,7 @@ const ChatSessionPage = () => {
 
           <input
             type="text"
-            className="flex-1 border rounded-full px-4 py-2"
+            className="message-input"
             placeholder="Type a message…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -222,9 +222,9 @@ const ChatSessionPage = () => {
 
           <button
             onClick={handleSend}
-            className="ml-2 px-4 py-2 rounded-full bg-blue-500 text-white flex items-center"
+            className="send-button"
           >
-            <Send className="w-5 h-5" />
+            <Send className="send-icon" />
           </button>
         </div>
       </div>
