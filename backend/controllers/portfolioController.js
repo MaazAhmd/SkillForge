@@ -6,7 +6,7 @@ exports.createPortfolio = async (req, res) => {
     const { title, description, skills, price } = req.body;
     const userId = req.user._id; // Ensure user is authenticated and available
 
-    const imageUrls = req.files.map((f) => `http://localhost:5000/uploads/${f.filename}`);
+    const imageUrls = req.files.map(f => `http://localhost:5000/uploads/images/${f.filename}`);
 
     const item = await PortfolioItem.create({
       title,

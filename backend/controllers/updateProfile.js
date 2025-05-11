@@ -1,40 +1,29 @@
+const path = require("path");
 const { User } = require("../models/UserModel");
 const { ApiError } = require("../utils/apiError");
 const { ApiResponse } = require("../utils/ApiResponse");
-const asyncHandler = require("express-async-handler"); // Correct import
+const { asyncHandler } = require("../utils/asyncHandler");
 
-// Update Profile Function
-const updateProfile = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    const { name, email, phone, description, location } = req.body;
-
-    const updates = { name, email, phone, description, location };
-
-    // Handle profile picture upload if provided
-    if (req.file) {
-        updates.profilePicture = req.file.path; // Assuming you're using multer for file uploads
-    }
-
-    const user = await User.findByIdAndUpdate(userId, updates, {
-        new: true,
-        runValidators: true,
-    });
-
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-
-    res.status(200).json(new ApiResponse(200, user, "Profile updated successfully"));
+exports.getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
+  if (!user) throw new ApiError(404, "User not found");
+  res.json(new ApiResponse(200, user, "Profile fetched"));
 });
 
-// Get User Profile Function
-const getUserProfile = asyncHandler(async (req, res) => {
-    const user = req.user; // The user object is already attached by verifyToken middleware
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
+exports.updateProfile = asyncHandler(async (req, res) => {
+  const { name, bio } = req.body;
+  const updates = { name, bio: typeof bio === "string" ? JSON.parse(bio) : bio };
 
-    res.status(200).json(new ApiResponse(200, user, "User profile fetched successfully"));
+  if (req.file) {
+    updates.profilePicture = `http://localhost:5000/uploads/images/${path.basename(req.file.path)}`;
+  }
+
+  const user = await User.findByIdAndUpdate(req.user._id, updates, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  }).select("-password");
+
+  if (!user) throw new ApiError(404, "User not found");
+  res.json(new ApiResponse(200, user, "Profile updated"));
 });
-
-module.exports = { updateProfile, getUserProfile };

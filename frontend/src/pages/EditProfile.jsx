@@ -1,162 +1,185 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "../api/axios";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Edit2,
+  Loader2,
+} from "lucide-react";
 
-function EditProfile() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [profilePic, setProfilePic] = useState(null);
+export default function EditProfile() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    bio: { about: "", location: "", phone: "" },
+  });
+  const [preview, setPreview] = useState(null);
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get("/users/me")
+      .then(({ data }) => {
+        const user = data.data;
+        setForm({
+          name: user.name,
+          email: user.email,
+          bio: user.bio,
+        });
+        if (user.profilePicture) {
+          setPreview(user.profilePicture);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name.startsWith("bio.")) {
+      const key = name.split(".")[1];
+      setForm((f) => ({ ...f, bio: { ...f.bio, [key]: value } }));
+    } else {
+      setForm((f) => ({ ...f, [name]: value }));
+    }
+  };
+
+  const handleFile = (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      setFile(f);
+      setPreview(URL.createObjectURL(f));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("phone", phone);
-    formData.append("description", description);
-    formData.append("location", location);
-    if (profilePic) {
-      formData.append("profilePic", profilePic);
-    }
-
+    setLoading(true);
     try {
-      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-      const response = await fetch(
-        "http://localhost:5000/api/users/update-profile",
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const fd = new FormData();
+      fd.append("name", form.name);
+      fd.append("bio", JSON.stringify(form.bio));
+      if (file) fd.append("profilePicture", file);
 
-      if (response.ok) {
-        const data = await response.json();
-        alert(data.message || "Profile updated successfully.");
+      const { data } = await axios.put("/users/update-profile", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-        // Fetch updated user data
-        const userResponse = await fetch("http://localhost:5000/api/users/me", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (userResponse.ok) {
-          const updatedUser = await userResponse.json();
-          // Update the frontend state with the updated user data
-          setName(updatedUser.name || "");
-          setEmail(updatedUser.email || "");
-          setPhone(updatedUser.phone || "");
-          setDescription(updatedUser.description || "");
-          setLocation(updatedUser.location || "");
-          setProfilePic(null); // Reset the profile picture input
-        }
-      } else {
-        const errorData = await response.json();
-        alert(errorData.message || "Failed to update profile.");
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("An error occurred. Please try again.");
+      console.log("Updated", data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Edit Profile
-      </h1>
-
+    <div className="max-w-xl mx-auto p-6 bg-white shadow rounded">
+      <h2 className="text-2xl font-semibold mb-4 flex items-center">
+        <Edit2 className="mr-2" /> Edit Profile
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Profile Picture */}
+        {/* Profile picture */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">
-            Profile Picture
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setProfilePic(e.target.files[0])}
-            className="block w-full"
-          />
+          <label className="block text-sm font-medium mb-1">Avatar</label>
+          <div className="flex items-center space-x-4">
+            <div className="w-20 h-20 bg-gray-100 rounded-full overflow-hidden">
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-full h-full text-gray-300 p-4" />
+              )}
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFile}
+              className="block"
+            />
+          </div>
         </div>
 
         {/* Name */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Name</label>
-          <input
-            type="text"
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-
-        {/* Email */}
-        <div>
-          <label className="block font-medium text-gray-700 mb-1">Email</label>
-          <input
-            type="email"
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        {/* Phone Number */}
-        <div>
-          <label className="block font-medium text-gray-700 mb-1">
-            Phone Number
+          <label className="block text-sm font-medium mb-1">
+            Name <User className="inline-block w-4 h-4 ml-1" />
           </label>
           <input
-            type="tel"
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="w-full border rounded px-3 py-2"
           />
         </div>
 
-        {/* Description */}
+        {/* Email (read-only) */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">
-            Description
+          <label className="block text-sm font-medium mb-1">
+            Email <Mail className="inline-block w-4 h-4 ml-1" />
           </label>
-          <textarea
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            rows="3"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          ></textarea>
+          <input
+            name="email"
+            value={form.email}
+            readOnly
+            className="w-full border bg-gray-50 rounded px-3 py-2 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Phone <Phone className="inline-block w-4 h-4 ml-1" />
+          </label>
+          <input
+            name="bio.phone"
+            value={form.bio.phone}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+          />
         </div>
 
         {/* Location */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">
-            Location
+          <label className="block text-sm font-medium mb-1">
+            Location <MapPin className="inline-block w-4 h-4 ml-1" />
           </label>
           <input
-            type="text"
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            name="bio.location"
+            value={form.bio.location}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
           />
         </div>
 
-        {/* Save Button */}
+        {/* About */}
+        <div>
+          <label className="block text-sm font-medium mb-1">About</label>
+          <textarea
+            name="bio.about"
+            value={form.bio.about}
+            onChange={handleChange}
+            rows={4}
+            className="w-full border rounded px-3 py-2"
+          />
+        </div>
+
+        {/* Submit */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          disabled={loading}
+          className="w-full py-2 rounded bg-blue-600 text-white flex items-center justify-center"
         >
+          {loading && <Loader2 className="animate-spin mr-2 w-5 h-5" />}
           Save Changes
         </button>
       </form>
     </div>
   );
 }
-
-export default EditProfile;

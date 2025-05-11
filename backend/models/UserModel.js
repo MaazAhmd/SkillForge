@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const BioSchema = new mongoose.Schema({
+  about: { type: String, default: "" },
+  location: { type: String, default: "" },
+  phone: { type: String, default: "" },
+});
+
 const UserSchema = new mongoose.Schema(
     {
         name: {
@@ -18,7 +24,7 @@ const UserSchema = new mongoose.Schema(
             required: true,
         },
         role: { type: String, enum: ["client", "freelancer", "admin"] },
-        bio: String,
+        bio: { type: BioSchema, default: () => ({}) },
         profilePicture: String,
     },
     { timestamps: true }
