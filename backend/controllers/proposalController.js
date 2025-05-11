@@ -81,7 +81,7 @@ const getProposalsByJobId = asyncHandler(async (req, res) => {
     const freelancer = await Freelancer.findFreelancerByUserId(user._id);
     if (freelancer) {
         // Return only their proposals for the job
-        proposals = await Proposal.find({
+        proposals = await Proposal.findOne({
             jobPostId,
             freelancerId: freelancer._id,
         })
@@ -105,7 +105,7 @@ const getProposalsByJobId = asyncHandler(async (req, res) => {
     }
 
     if (!proposals || proposals.length === 0) {
-        throw new ApiError(404, "No proposals found for this job");
+        throw new ApiError(200, "No proposals found for this job");
     }
 
     res.status(200).json(
@@ -128,13 +128,12 @@ const createProposal = asyncHandler(async (req, res) => {
     if (!jobPostId || !message || !deadline || !price) {
         throw new ApiError(400, "Missing required fields");
     }
-
     const existingProposal = await Proposal.findOne({
         freelancerId: freelancer._id,
         jobPostId,
         status: "submitted",
     });
-
+    
     if (existingProposal) {
         throw new ApiError(
             409,

@@ -25,7 +25,7 @@ export const addFunds = createAsyncThunk(
             const res = await axios.post(`/accounts/${accountId}/add`, {
                 amount,
             });
-            return res.data;
+            return res.data.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.response?.data || err.message);
         }

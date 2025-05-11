@@ -1,0 +1,251 @@
+.chat-session-page html, 
+ body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto; /* Prevent body scrolling */
+}
+
+.chat-session {
+    display: flex;
+    flex-direction: column;
+    height: 91vh; /* Full viewport height */
+    background-color: #cddded;
+    overflow: hidden;
+}
+
+/* Header */
+.chat-header {
+    height: 4rem; /* Fixed height for the top bar */
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: #2782e4;
+    color: rgb(255, 255, 255);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.profile-picture {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.chat-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.chat-last-seen {
+    font-size: 0.875rem;
+    color: #ffffff;
+}
+
+/* Messages */
+.chat-messages {
+    flex: 1; /* Allow the messages container to grow and take available space */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 1rem;
+    height: calc(100vh - 9rem); 
+}
+
+.chat-message {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.message-image {
+    max-width: 100%; /* Ensure the image doesn't overflow the container */
+    max-height: 250px; /* Set a maximum height for the image */
+    border-radius: 0.375rem; /* Add rounded corners for a polished look */
+    object-fit: cover; /* Ensure the image scales proportionally */
+    margin-top: 0.5rem; /* Add spacing above the image */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+}
+.chat-message.mine {
+    justify-content: flex-end;
+}
+
+.chat-message.theirs {
+    justify-content: flex-start;
+}
+
+.message-bubble {
+    max-width: 60%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.message-bubble.mine {
+    background-color: #407cfc;
+    color: white;
+}
+
+.message-bubble.theirs {
+    background-color: #ffffff;
+    color: #374151;
+}
+
+.sender-name {
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.message-content {
+    font-size: 0.875rem;
+}
+
+.message-time.mine {
+    font-size: 0.75rem;
+    color: #ededed; 
+    margin-top: 0.5rem;
+    text-align: right;
+}
+
+.message-time.theirs {
+    font-size: 0.75rem;
+    color: #7a7a7a;
+    margin-top: 0.5rem;
+    text-align: right;
+}
+
+/* Input Area */
+.chat-input {
+    height: 5rem; /* Fixed height for the input area */
+    padding: 0.5rem 1rem; /* Adjust padding for better spacing */
+    background-color: white;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column; /* Stack attachment preview and input */
+    justify-content: space-between;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.emoji-button {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.emoji-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #6b7280;
+}
+
+
+.message-input {
+    flex: 1;
+    border: 1px solid #d1d5db;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.send-button {
+    background-color: #2563eb;
+    border: none;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.emoji-picker {
+    position: absolute; /* Position it relative to the parent container */
+    bottom: 5rem; /* Place it above the input area */
+    left: 1rem; /* Adjust the horizontal position */
+    z-index: 20; /* Ensure it appears above other elements */
+    background-color: white; /* Add a background for better visibility */
+    border: 1px solid #d1d5db; /* Add a border for separation */
+    border-radius: 0.5rem; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 0.5rem; /* Add padding inside the picker */
+}
+.attachment {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.attachment-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #ffffff;
+}
+
+.attachment-name {
+    font-size: 0.875rem;
+    font-weight: bold;
+    color: #374151;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    flex: 1;
+    margin-right: 0.5rem;
+}
+.attachment-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e8e8e8;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.attachment-preview img {
+    max-width: 50px;
+    max-height: 100px;
+
+}
+
+.download-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #2563eb;
+    border-radius: 0.375rem;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.download-link:hover {
+    background-color: #1e4db7;
+}
+.remove-attachment {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 1.25rem;
+    cursor: pointer;
+}
+.remove-attachment:hover {
+    color: #000000;
+}
+   

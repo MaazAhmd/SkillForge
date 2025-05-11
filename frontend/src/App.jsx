@@ -16,11 +16,13 @@ import { clearError } from "./redux/slices/authSlice";
 import { useEffect } from "react";
 import AddPortfolio from "./pages/AddPortfolio";
 import PortfolioDetail from "./pages/PortfolioDetail";
-import ChatPage from "./pages/ChatSessionPage";
+import EditPortfolio from "./pages/EditPortfolio"; // Import EditPortfolio
+import DeletePortfolio from "./pages/DeletePortfolio"; // Import DeletePortfolio
 import ChatListPage from "./pages/ChatListPage";
 import ChatSessionPage from "./pages/ChatSessionPage";
 import Proposals from "./pages/Proposals";
 import { useSelector, useDispatch } from "react-redux";
+import DepositFunds from "./pages/DepositFunds";
 import EditProfile from "./pages/EditProfile";
 
 function App() {
@@ -102,6 +104,14 @@ function App() {
                         }
                     />
                     <Route
+                        path="/deposit-funds"
+                        element={
+                            <ProtectedRoute>
+                                <DepositFunds />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
                         path="/postjob"
                         element={
                             <ProtectedRoute>
@@ -125,7 +135,6 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-
                     <Route
                         path="/chat/:chatId"
                         element={
@@ -142,13 +151,29 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                  <Route
-                      path="/edit-profile"
-                      element={
-                        <ProtectedRoute>
-                          <EditProfile />
-                        </ProtectedRoute>
-                      }
+                    <Route
+                        path="/portfolios/edit/:id"
+                        element={
+                            <ProtectedRoute>
+                                <EditPortfolio />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/portfolios/delete/:id"
+                        element={
+                            <ProtectedRoute>
+                                <DeletePortfolio />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/edit-profile"
+                        element={
+                            <ProtectedRoute>
+                                <EditProfile />
+                            </ProtectedRoute>
+                        }
                     />
                     <Route path="/logout" element={<LogoutRoute />} />
                 </Routes>

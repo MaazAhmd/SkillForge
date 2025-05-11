@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "../../api/axios";
 
-const SendProposalModal = ({ job, onClose }) => {
+const SendProposalModal = ({ job, setNotification, onClose }) => {
     // States for inputs:
     const [message, setMessage] = useState("");
     const [deadline, setDeadline] = useState("");
@@ -20,16 +20,17 @@ const SendProposalModal = ({ job, onClose }) => {
             .post("/proposals/create", proposalData)
             .then((res) => {
                 if (res.status >= 200 && res.status < 300) {
-                    alert("Proposal submitted!");
+                    setNotification({ type: "success", message: "Proposal successfully submitted!" });
                     onClose();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 } else {
-                    console.log(res);
-                    alert("Failed to submit proposal.");
+                    setNotification({ type: "error", message: "Failed to submit proposal." });
                 }
             })
             .catch((err) => {
-                console.log(err.response.data);
-                alert("Failed to submit proposal." + err.response.data.message);
+                setNotification({ type: "error", message: "Failed to submit proposal." });
             });
     };
     return (
@@ -39,7 +40,7 @@ const SendProposalModal = ({ job, onClose }) => {
                 style={{ width: "90vw" }}
             >
                 <button
-                    className="absolute top-3 right-4 text-gray-300 hover:text-white"
+                    className="absolute font-bold top-5 right-5 text-gray-800 hover:text-gray-600 cursor-pointer"
                     onClick={onClose}
                 >
                     ✕
@@ -50,7 +51,7 @@ const SendProposalModal = ({ job, onClose }) => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block font-medium mb-1">
-                            Message
+                            Cover Letter
                         </label>
                         <textarea
                             className="w-full bg-gray-200 rounded p-2"

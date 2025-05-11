@@ -206,7 +206,7 @@ export default function ViewProposalModal({
                                     </button>
                                 ) : (
                                     <a
-                                        href="/recharge"
+                                        href="/deposit-funds"
                                         className="px-4 py-2 text-sm bg-orange-500 text-white rounded hover:bg-orange-600"
                                     >
                                         Recharge Balance
