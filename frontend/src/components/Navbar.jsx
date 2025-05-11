@@ -100,7 +100,7 @@ export function Navbar() {
                             className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-full transition-colors cursor-pointer"
                         >
                             <img
-                                src="https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg"
+                                src={user?.profilePicture || "/svgs/default_user.svg"}
                                 alt="Profile"
                                 className="w-8 h-8 rounded-full"
                             />

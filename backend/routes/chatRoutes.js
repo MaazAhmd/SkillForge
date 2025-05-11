@@ -14,5 +14,7 @@ router.post(
 );
 router.get("/users", verifyToken, chatController.getAllUsers);
   router.get("/session", verifyToken, chatController.getOrCreateChat);
+  router.get("/conversations", verifyToken,chatController.getUserConversations);
 router.get('/:chatId',verifyToken, chatController.getChatById);
+
 module.exports = router;

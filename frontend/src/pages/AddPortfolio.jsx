@@ -156,7 +156,7 @@ export default function AddPortfolio() {
           <button
             type="submit"
             disabled={adding}
-            className="bg-primary text-white px-6 py-2 rounded-md flex items-center gap-2 disabled:opacity-50"
+            className="bg-primary cursor-pointer text-white px-6 py-2 rounded-md flex items-center gap-2 disabled:opacity-50"
           >
             {adding ? <Loader className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
             <span>{adding ? 'Saving...' : 'Add Work'}</span>

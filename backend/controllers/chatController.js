@@ -1,7 +1,7 @@
 const ChatSession = require("../models/MessageModel");
 const { User } = require("../models/UserModel");
-const path = require("path");
-
+const { ApiResponse } = require("../utils/ApiResponse");
+const { asyncHandler } = require("../utils/asyncHandler");
 
 exports.getChatsForUser = async (req, res) => {
   const me = req.user._id;
@@ -25,6 +25,7 @@ exports.getChatsForUser = async (req, res) => {
       lastMsg
     };
   });
+  console.log('summary', summary);
 
   res.json({ success: true, chats: summary });
 };
@@ -133,3 +134,47 @@ exports.getChatById = async (req, res) => {
   }
 };
 
+
+
+exports.getUserConversations = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const sessions = await ChatSession.find({
+    $or: [{ user1: userId }, { user2: userId }],
+  })
+    .sort({ updatedAt: -1 })
+    .limit(4)
+    .populate("user1", "name profilePicture")
+    .populate("user2", "name profilePicture")
+    .lean();
+
+  const conversations = sessions.map((sess) => {
+    const other =
+      sess.user1._id.toString() === userId.toString()
+        ? sess.user2
+        : sess.user1;
+
+    const lastMsg =
+      sess.messages.length > 0
+        ? sess.messages[sess.messages.length - 1]
+        : null;
+
+    return {
+      chatId: sess._id,
+      participant: {
+        id: other._id,
+        name: other.name,
+        avatar: other.profilePicture,
+      },
+      lastMessage: lastMsg
+        ? {
+            content: lastMsg.content,
+            attachment: lastMsg.attachment,
+            timestamp: lastMsg.timestamp,
+          }
+        : null,
+    };
+  });
+
+  res.json(new ApiResponse(200, conversations, "Latest conversations"));
+});

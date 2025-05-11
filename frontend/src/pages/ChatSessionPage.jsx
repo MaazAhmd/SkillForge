@@ -28,7 +28,7 @@ const ChatSessionPage = () => {
         .then(res => dispatch({ type: 'chat/upsertChat', payload: res.data.chat }))
         .catch(console.error);
     }
-  }, [chatId, session, user._id, dispatch]);
+  }, [chatId, session, user?._id, dispatch]);
 
   useEffect(() => {
     const handler = msg => {

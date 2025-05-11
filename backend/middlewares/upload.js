@@ -1,11 +1,10 @@
-// server/middlewares/upload.js
 const multer = require('multer');
 const path  = require('path');
 const fs    = require('fs');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const mode = req.body.mode || 'image';
+    const mode = req.body.mode || 'images';
     const folder = mode === 'file'
       ? 'files'
       : 'images';

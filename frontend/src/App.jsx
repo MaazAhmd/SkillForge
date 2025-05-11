@@ -21,6 +21,7 @@ import ChatListPage from "./pages/ChatListPage";
 import ChatSessionPage from "./pages/ChatSessionPage";
 import Proposals from "./pages/Proposals";
 import { useSelector, useDispatch } from "react-redux";
+import EditProfile from "./pages/EditProfile";
 
 function App() {
     const dispatch = useDispatch();

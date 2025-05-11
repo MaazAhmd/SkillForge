@@ -35,6 +35,7 @@ const signup = asyncHandler(async (req, res) => {
         name,
         email: email.toLowerCase(),
         password,
+        profilePicture: "/svgs/default_user.svg",
         role,
     });
 

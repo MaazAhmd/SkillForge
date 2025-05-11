@@ -8,7 +8,6 @@ const { initSocket } = require("./utils/socket");
 
 const app = express();
 const server = http.createServer(app); 
-const path = require("path");
 
 app.use(
   cors({
@@ -32,7 +31,7 @@ const updateProfileRoutes = require("./routes/updateProfileRoute"); // Import th
 const errorHandler = require("./middlewares/errorHandler");
 
 app.use("/api/users", authRoutes);
-app.use("/api/users", updateProfileRoutes); // Add the update profile routes
+app.use("/api/users", updateProfileRoutes); 
 app.use("/api/jobs", jobPostRoutes);
 app.use("/api/proposals", proposalRoutes);
 app.use("/api/projects", projectRoutes);
@@ -46,7 +45,6 @@ app.use('/uploads/files',  express.static(path.join(__dirname, 'uploads', 'files
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/accounts", accountRoutes);
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(errorHandler);
 
