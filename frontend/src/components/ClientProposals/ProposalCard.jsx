@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function ProposalCard({ proposal, openModal }) {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -47,18 +48,24 @@ export default function ProposalCard({ proposal, openModal }) {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    <button
-                        onClick={() => openModal(proposal)}
-                        className="text-sm px-3 py-1 bg-primary text-white rounded-md hover:bg-primary/90 transition"
-                    >
-                        View Proposal
-                    </button>
-                    <button
-                        onClick={() => openModal(proposal)}
-                        className="text-sm px-3 py-1 bg-primary text-white rounded-md hover:bg-primary/90 transition"
-                    >
-                        Send Message
-                    </button>
+                    {proposal.status === "submitted" ? (
+                        <>
+                            <button
+                                onClick={() => openModal(proposal)}
+                                className="text-sm px-3 py-1 bg-primary text-white rounded-md hover:bg-primary/90 transition"
+                            >
+                                View Proposal
+                            </button>
+                            <Link
+                                to={`/chat/${proposal.freelancerId._id}`}
+                                className="text-sm px-3 py-1 bg-primary text-white rounded-md hover:bg-primary/90 transition"
+                            >
+                                Send Message
+                            </Link>
+                        </>
+                    ) : (
+                        <div className="text-sm px-3 py-1 bg-green-800 text-white rounded-md ">Proposal Accepted</div>
+                    )}
                 </div>
             </div>
         </div>

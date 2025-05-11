@@ -17,7 +17,7 @@ export function ProfileHeader({ activeTab, setActiveTab }) {
       }}
     >
       <div className="absolute top-4 left-4 text-white">
-        <button onClick={() => navigate(-1)} className="underline">
+        <button onClick={() => navigate(-1)} className="underline hover:cursor-pointer">
           Back
         </button>
       </div>

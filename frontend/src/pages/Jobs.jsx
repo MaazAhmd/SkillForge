@@ -16,9 +16,9 @@ import { fetchActiveProjects } from "../redux/slices/projectSlice";
 
 const messages = [
     {
-        author: "Lord Magneto",
-        message: "It was nice talking to you my nigga. You are not...",
-        time: "14-April",
+        author: "Husnain Raza",
+        message: "I have a question about the project",
+        time: "11-May",
         avatar: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2",
     },
 ];
@@ -33,6 +33,8 @@ function Jobs() {
         error,
         categories,
     } = useSelector((state) => state.job);
+
+    const openJobs = filteredJobs.filter((job) => job.status === "open");
 
     useEffect(() => {
         dispatch(fetchActiveProjects());
@@ -82,11 +84,11 @@ function Jobs() {
                         <div className="space-y-4 bg-darkgrey p-4 rounded-xl">
                             {loading && <p>Loading...</p>}
                             {error && <p className="text-red-500">{error}</p>}
-                            {!loading && filteredJobs.length === 0 && (
+                            {!loading && openJobs.length === 0 && (
                                 <p className="text-gray-400">No jobs found.</p>
                             )}
-                            {filteredJobs ? (
-                                filteredJobs.map((job) => (
+                            {openJobs ? (
+                                openJobs.map((job) => (
                                     <div
                                         key={job._id}
                                         className="transition-transform transform hover:scale-102 duration-300"
@@ -115,7 +117,7 @@ function Jobs() {
                                     Sort
                                 </button>
                             </div>
-                            {ongoingProjects ? (
+                            {ongoingProjects && ongoingProjects.length > 0 ? (
                                 ongoingProjects.map((project, index) => (
                                     <OngoingProjectCard
                                         key={index}

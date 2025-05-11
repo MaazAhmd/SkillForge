@@ -8,9 +8,9 @@ import { fetchClientJobs } from "../redux/slices/clientJobsSlice";
 
 const messages = [
     {
-        author: "Lord Magneto",
-        message: "It was nice talking to you my nigga. You are not...",
-        time: "14-April",
+        author: "Husnain Raza",
+        message: "I have a question about the project",
+        time: "11-May",
         avatar: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&dpr=2",
     },
 ];
@@ -62,16 +62,57 @@ function ClientJobs() {
                                 </p>
                             )}
                             {clientJobs ? (
-                                clientJobs.map((job) => (
-                                    <div
-                                        key={job._id}
-                                        className="transition-transform transform hover:scale-102 duration-300"
-                                    >
-                                        <Link to={`/jobs/${job._id}`}>
-                                            <JobCard job={job} />
-                                        </Link>
-                                    </div>
-                                ))
+                                clientJobs
+                                    .filter((job) => job.status === "open")
+                                    .map((job) => (
+                                        <div
+                                            key={job._id}
+                                            className="transition-transform transform hover:scale-102 duration-300"
+                                        >
+                                            <Link to={`/jobs/${job._id}`}>
+                                                <JobCard job={job} />
+                                            </Link>
+                                        </div>
+                                    ))
+                            ) : (
+                                <h5 className="text-gray-400 py-8 my-8 text-center">
+                                    No jobs found.
+                                </h5>
+                            )}
+                        </div>
+
+                        <h2 className="text-lg font-semibold mt-8 mb-4">
+                            Past Job Posts
+                        </h2>
+                        <p className="mb-4">
+                            Jobs that are in-progress, completed or closed
+                        </p>
+
+                        <div className="space-y-4 bg-darkgrey p-4 rounded-xl">
+                            {loading && (
+                                <div className="flex items-center justify-center py-6">
+                                    <Loader2 className="w-12 h-12 animate-spin text-gray-500" />
+                                </div>
+                            )}
+                            {error && <p className="text-red-500">{error}</p>}
+                            {!loading && clientJobs.length === 0 && (
+                                <p className="text-gray-400">
+                                    No jobs posted by you.
+                                </p>
+                            )}
+                            {clientJobs ? (
+                                clientJobs
+                                    .filter((job) => job.status !== "open")
+                                    .map((job) => (
+                                        <div
+                                            key={job._id}
+                                            className="transition-transform transform hover:scale-102 duration-300"
+                                        >
+                                            <Link to={`/jobs/${job._id}`}>
+                                                <JobCard job={job} />
+                                            </Link>
+                                        </div>
+                                    ))
                             ) : (
                                 <h5 className="text-gray-400 py-8 my-8 text-center">
                                     No jobs found.

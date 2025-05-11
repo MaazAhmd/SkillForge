@@ -169,14 +169,15 @@ const requestRevision = asyncHandler(async (req, res) => {
 
 const markCompleted = asyncHandler(async (req, res) => {
     const client = await Client.findClientByUserId(req.user._id);
-    const project = await Project.findById(req.params.id).populate("jobPostId");
-    const freelancer = await Freelancer.findFreelancerByUserId(
-        project.freelancerId
-    );
+    const project = await Project.findById(req.params.id)
+        .populate("jobPostId")
+        .populate("freelancerId");
+    const freelancer = await Freelancer.findById(
+        project.freelancerId._id
+    ).populate("user", "-email -password");
     const admin = await User.findOne({ role: "admin" });
-    console.log("Admin: ", admin);
     const freelancerAccount = await Account.findOne({
-        userId: freelancer._id,
+        userId: freelancer.user._id,
     });
     const adminAccount = await Account.findOne({
         userId: admin._id,
@@ -192,7 +193,7 @@ const markCompleted = asyncHandler(async (req, res) => {
         );
     }
 
-    project.status = "completed-reviewed";
+    project.status = "completed-not-reviewed";
     project.completionDate = new Date();
     await project.save();
     adminAccount.balance -= project.price * 0.1;

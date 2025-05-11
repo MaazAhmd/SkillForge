@@ -9,9 +9,14 @@
 .chat-session {
     display: flex;
     flex-direction: column;
-    height: 91vh; /* Full viewport height */
+    height: 85vh; /* Full viewport height */
     background-color: #cddded;
     overflow: hidden;
+    width: 80%;
+    margin: auto;
+    margin-top: 1rem;
+    border-radius: 20px;
+
 }
 
 /* Header */

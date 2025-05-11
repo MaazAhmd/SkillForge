@@ -6,7 +6,7 @@ import socket from '../socket';
 import axios from '../api/axios';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
-import { Paperclip, Smile, Send } from 'lucide-react';
+import { Paperclip, Smile, Send, Loader2 } from 'lucide-react';
 import './ChatSessionPage.css'; // Import the CSS file
 
 const ChatSessionPage = () => {
@@ -46,7 +46,12 @@ const ChatSessionPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [session?.messages]);
 
-  if (!session) return <div className="loading">Loading chat…</div>;
+  if (!session)
+      return (
+          <div className="flex items-center justify-center h-64">
+              <Loader2 className="animate-spin text-primary h-10 w-10" />
+          </div>
+      );
 
   const other = session.user1._id === user._id ? session.user2 : session.user1;
 
