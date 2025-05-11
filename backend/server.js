@@ -8,7 +8,7 @@ const { initSocket } = require("./utils/socket");
 
 const app = express();
 const server = http.createServer(app); 
-const path = require("path");
+
 
 app.use(
   cors({
