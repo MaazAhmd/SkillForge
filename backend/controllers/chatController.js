@@ -25,7 +25,6 @@ exports.getChatsForUser = async (req, res) => {
       lastMsg
     };
   });
-  console.log('summary', summary);
 
   res.json({ success: true, chats: summary });
 };
@@ -115,7 +114,6 @@ exports.getChatById = async (req, res) => {
 
     const chat = await ChatSession.findOne({
       _id: chatId,
-      $or: [{ user1: me }, { user2: me }]
     })
     .populate('user1 user2')
     .populate({
@@ -134,7 +132,25 @@ exports.getChatById = async (req, res) => {
   }
 };
 
-
+exports.getChatByUserId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const me = req.user._id;
+    let chat = await ChatSession.findOne({
+      $or: [
+        { user1: me, user2: id },
+        { user1: id, user2: me }
+      ]
+    });
+    if (!chat) {
+      chat = await ChatSession.create({ user1: me, user2: id, messages: [] });
+    }
+    res.json({ success: true, chatId: chat._id });
+  } catch (err) {
+    console.error('getChatByUserId error', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 exports.getUserConversations = asyncHandler(async (req, res) => {
   const userId = req.user._id;

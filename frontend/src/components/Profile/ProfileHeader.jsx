@@ -13,11 +13,14 @@ export function ProfileHeader({ activeTab, setActiveTab }) {
     <div
       className="h-40 md:h-48 relative mx-4 md:m-10 rounded-xl mb-16 lg:mb-28 md:mb-20 bg-cover bg-center"
       style={{
-        backgroundImage: `url('${user.coverPhoto || "/images/profile.png"}')`,
+        backgroundImage: `url('${user.coverPhoto || "/profile.png"}')`,
       }}
     >
       <div className="absolute top-4 left-4 text-white">
-        <button onClick={() => navigate(-1)} className="underline hover:cursor-pointer">
+        <button
+          onClick={() => navigate(-1)}
+          className="underline hover:cursor-pointer"
+        >
           Back
         </button>
       </div>
@@ -27,7 +30,7 @@ export function ProfileHeader({ activeTab, setActiveTab }) {
           {/* Avatar + name/email + edit */}
           <div className="relative flex items-center space-x-4 -mt-8">
             <img
-              src={user.profilePicture || "/images/default-avatar.png"}
+              src={user.profilePicture || "/profile/default-profile.png"}
               alt={user.name}
               className="w-20 h-20 md:w-28 md:h-28 rounded-2xl shadow-lg object-cover"
             />
@@ -39,9 +42,7 @@ export function ProfileHeader({ activeTab, setActiveTab }) {
             </button>
             <div>
               <h1 className="text-lg md:text-xl font-bold">{user.name}</h1>
-              <p className="text-sm md:text-base text-gray-600">
-                {user.email}
-              </p>
+              <p className="text-sm md:text-base text-gray-600">{user.email}</p>
             </div>
           </div>
 

@@ -6,6 +6,7 @@ const {
     deliverProject,
     requestRevision,
     markCompleted,
+    cancelProject,
 } = require("../controllers/projectController");
 const { verifyToken } = require("../middlewares/authMiddleware");
 const authorizeRoles = require("../middlewares/rolesMiddleware");
@@ -18,5 +19,6 @@ router.post("/:id/deliver", verifyToken, authorizeRoles('freelancer'), deliverPr
 router.put("/:id/update-deadline", verifyToken, authorizeRoles('client'), updateDeadline);
 router.put("/:id/mark-complete", verifyToken, authorizeRoles('client'), markCompleted);
 router.put("/:id/request-revision", verifyToken, authorizeRoles('client'), requestRevision);
+router.put("/:id/cancel", verifyToken, cancelProject);
 
 module.exports = router;

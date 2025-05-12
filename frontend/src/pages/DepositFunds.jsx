@@ -38,7 +38,7 @@ const DepositFunds = () => {
             dispatch(fetchAccount());
             setIsLoading(false);
             setStep(4);
-        }, 10000);
+        }, 6000);
     };
 
     return (

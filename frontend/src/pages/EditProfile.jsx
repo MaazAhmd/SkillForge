@@ -8,8 +8,13 @@ import {
   Edit2,
   Loader2,
 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { updateUserProfile } from "../redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function EditProfile() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -66,8 +71,8 @@ export default function EditProfile() {
       const { data } = await axios.put("/users/update-profile", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      console.log("Updated", data);
+      dispatch(updateUserProfile(data.data));
+      navigate("/profile");
     } catch (err) {
       console.error(err);
     } finally {
@@ -76,7 +81,7 @@ export default function EditProfile() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white shadow rounded">
+    <div className="max-w-xl mx-auto my-12 p-6 bg-white shadow rounded">
       <h2 className="text-2xl font-semibold mb-4 flex items-center">
         <Edit2 className="mr-2" /> Edit Profile
       </h2>
@@ -84,7 +89,7 @@ export default function EditProfile() {
         {/* Profile picture */}
         <div>
           <label className="block text-sm font-medium mb-1">Avatar</label>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="w-20 h-20 bg-gray-100 rounded-full overflow-hidden">
               {preview ? (
                 <img
@@ -100,7 +105,7 @@ export default function EditProfile() {
               type="file"
               accept="image/*"
               onChange={handleFile}
-              className="block"
+              className="border rounded-md px-4 py-2 max-w-64"
             />
           </div>
         </div>

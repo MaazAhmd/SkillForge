@@ -18,7 +18,6 @@ function JobDetail() {
 
     const user = useSelector((state) => state.auth.user);
     const navigate = useNavigate();
-
     const handleStartChat = async () => {
         try {
             const res = await axios.get(`/chat/session`, {
@@ -267,7 +266,7 @@ function JobDetail() {
                             <div className="mt-4">
                                 <button
                                     onClick={handleStartChat}
-                                    className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition"
+                                    className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition cursor-pointer"
                                 >
                                     Send Message
                                 </button>

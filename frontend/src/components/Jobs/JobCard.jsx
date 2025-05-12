@@ -5,7 +5,7 @@ function JobCard({ job, activeTab }) {
   const isApplied = activeTab === 'applied';
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm mb-2" style={{hover: {Scale: '1.02'}}}>
+    <div className="bg-white p-6 rounded-lg shadow-sm" style={{hover: {Scale: '1.02'}}}>
       <div className="flex items-start justify-between mb-4">
         <h3 className="text-lg font-medium text-gray-900">{job.title}</h3>
       </div>

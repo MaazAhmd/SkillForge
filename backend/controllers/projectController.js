@@ -166,12 +166,39 @@ const requestRevision = asyncHandler(async (req, res) => {
         )
     );
 });
+const cancelProject = asyncHandler(async (req, res) => {
+    const client = await Client.findClientByUserId(req.user._id);
+    const project = await Project.findById(req.params.id);
+    const jobPost = await JobPost.findById(project.jobPostId);
+    if (!jobPost) {
+        throw new ApiError(404, "Job post not found");
+    }
+    if (!project || !project.clientId.equals(client._id)) {
+        throw new ApiError(403, "Unauthorized");
+    }
 
+    if (project.status === "completed-not-reviewed" || project.status === "completed-reviewed") {
+        throw new ApiError(409, "Project is already completed and cannot be canceled");
+    }
+
+    if (project.status === "cancelled") {
+        throw new ApiError(409, "Project is already canceled");
+    }
+    jobPost.status = "cancelled";
+    project.status = "cancelled";
+    await project.save();
+    await jobPost.save();
+
+    res.status(200).json(
+        new ApiResponse(200, project, "Project has been canceled successfully")
+    );
+});
 const markCompleted = asyncHandler(async (req, res) => {
     const client = await Client.findClientByUserId(req.user._id);
     const project = await Project.findById(req.params.id)
         .populate("jobPostId")
         .populate("freelancerId");
+    const jobPost = await JobPost.findById(project.jobPostId);
     const freelancer = await Freelancer.findById(
         project.freelancerId._id
     ).populate("user", "-email -password");
@@ -192,10 +219,11 @@ const markCompleted = asyncHandler(async (req, res) => {
             "Project is not delivered yet or is already completed"
         );
     }
-
+    jobPost.status = "completed";
     project.status = "completed-not-reviewed";
     project.completionDate = new Date();
     await project.save();
+    await jobPost.save();
     adminAccount.balance -= project.price * 0.1;
     freelancerAccount.balance += project.price * 0.9;
     await adminAccount.save();
@@ -215,4 +243,5 @@ module.exports = {
     deliverProject,
     requestRevision,
     markCompleted,
+    cancelProject,
 };

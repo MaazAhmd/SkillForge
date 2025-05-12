@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import JobCard from "../components/Jobs/JobCard";
 import MessageCard from "../components/Jobs/MessageCard";
 import { fetchClientJobs } from "../redux/slices/clientJobsSlice";
+import OngoingProjectCard from "../components/Jobs/OngoingProjectCard";
+import { fetchActiveProjects } from "../redux/slices/projectSlice";
 
 const messages = [
     {
@@ -20,12 +22,21 @@ function ClientJobs() {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchClientJobs());
+        dispatch(fetchActiveProjects());
     }, [dispatch]);
-
+    const ongoingProjects = useSelector((state) =>
+        state.project.activeProjects?.filter(
+            (project) =>
+                project.status != "completed-not-reviewed" &&
+                project.status != "completed-reviewed" &&
+                project.status != "cancelled"
+        )
+    );
     const clientJobs = useSelector((state) => state.clientJobs.jobs);
+    const openJobs = clientJobs.filter((job) => job.status === "open");
+    const closedJobs = clientJobs.filter((job) => job.status !== "open");
     const loading = useSelector((state) => state.clientJobs.loading);
     const error = useSelector((state) => state.clientJobs.error);
-
     return (
         <div className="min-h-screen lg:py-5 lg:px-8 md:py-3 md:px-5">
             <main className="max-w-7xl mx-auto px-4 py-6">
@@ -61,9 +72,8 @@ function ClientJobs() {
                                     No jobs posted by you.
                                 </p>
                             )}
-                            {clientJobs ? (
-                                clientJobs
-                                    .filter((job) => job.status === "open")
+                            {openJobs?.length > 0 ? (
+                                openJobs
                                     .map((job) => (
                                         <div
                                             key={job._id}
@@ -100,9 +110,8 @@ function ClientJobs() {
                                     No jobs posted by you.
                                 </p>
                             )}
-                            {clientJobs ? (
-                                clientJobs
-                                    .filter((job) => job.status !== "open")
+                            {closedJobs?.length > 0 ? (
+                                closedJobs
                                     .map((job) => (
                                         <div
                                             key={job._id}
@@ -122,8 +131,7 @@ function ClientJobs() {
                     </div>
                     {/* Sidebar */}
                     <div className="space-y-6">
-                        {/* Recent Messages */}
-                        <div className="bg-white p-4 rounded-lg">
+                        {/* <div className="bg-white p-4 rounded-lg">
                             <h2 className="text-lg font-semibold mb-4">
                                 Recent Messages
                             </h2>
@@ -137,6 +145,25 @@ function ClientJobs() {
                             ) : (
                                 <h5 className="text-gray-400 my-8 text-center">
                                     No messages
+                                </h5>
+                            )}
+                        </div> */}
+                        <div className="bg-white p-4 rounded-lg">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-lg font-semibold">
+                                    Ongoing Projects
+                                </h2>
+                            </div>
+                            {ongoingProjects && ongoingProjects.length > 0 ? (
+                                ongoingProjects.map((project, index) => (
+                                    <OngoingProjectCard
+                                    key={index}
+                                    project={project}
+                                    />
+                                ))
+                            ) : (
+                                <h5 className="text-gray-400 my-8 text-center">
+                                    No ongoing projects
                                 </h5>
                             )}
                         </div>

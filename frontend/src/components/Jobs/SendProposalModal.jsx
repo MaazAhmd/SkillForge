@@ -36,7 +36,7 @@ const SendProposalModal = ({ job, setNotification, onClose }) => {
     return (
         <div className="fixed inset-0 bg-gray-900/40 flex items-center justify-center z-[1000] w-full">
             <div
-                className="bg-white text-black rounded-xl p-6 max-w-lg relative"
+                className="bg-white text-black rounded-xl p-6 max-w-lg relative max-h-screen overflow-y-auto"
                 style={{ width: "90vw" }}
             >
                 <button
@@ -90,7 +90,7 @@ const SendProposalModal = ({ job, setNotification, onClose }) => {
                     <div className="flex justify-end pt-2">
                         <button
                             type="submit"
-                            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold"
+                            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-semibold cursor-pointer text-white"
                         >
                             Submit
                         </button>

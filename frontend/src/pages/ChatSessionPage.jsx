@@ -15,7 +15,6 @@ const ChatSessionPage = () => {
   const { user } = useSelector((state) => state.auth);
   const chats = useSelector((state) => state.chat.list);
   const session = chats.find((c) => c._id === chatId);
-
   const [input, setInput] = useState('');
   const [attachmentData, setAttachmentData] = useState(null); // { file, name }
   const [showPicker, setShowPicker] = useState(false);
@@ -103,7 +102,6 @@ const ChatSessionPage = () => {
       });
 
       const msg = res.data.message;
-      dispatch(addMessage({ chatId, message: msg }));
       socket.emit('sendMessage', { ...msg, chatId });
     } catch (err) {
       console.error('Send failed:', err);

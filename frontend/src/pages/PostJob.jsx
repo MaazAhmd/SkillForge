@@ -310,7 +310,7 @@ function PostJob() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-primary hover:brightness-90 text-white px-6 py-2 rounded-md text-sm font-medium flex items-center gap-2 disabled:opacity-50"
+                className="bg-primary hover:brightness-90 text-white px-6 py-2 rounded-md text-sm font-medium flex items-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>

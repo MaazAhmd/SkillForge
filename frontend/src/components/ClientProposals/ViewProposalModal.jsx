@@ -124,10 +124,6 @@ export default function ViewProposalModal({
                                             </div>
                                         </div>
                                     </div>
-
-                                    <button className="bg-primary text-white px-4 py-2 rounded-md text-sm hover:bg-primary/90 transition">
-                                        Message
-                                    </button>
                                 </div>
 
                                 <p className="text-sm text-gray-600 italic">
@@ -143,13 +139,13 @@ export default function ViewProposalModal({
                             </p>
                             <div className="mt-4 flex justify-between">
                                 <button
-                                    className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                                    className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
                                     onClick={handleClose}
                                 >
                                     Close
                                 </button>
                                 <button
-                                    className="px-4 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600"
+                                    className="px-4 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
                                     onClick={handleAcceptClick}
                                 >
                                     Accept Proposal

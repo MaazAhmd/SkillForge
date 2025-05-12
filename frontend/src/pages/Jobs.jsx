@@ -113,9 +113,6 @@ function Jobs() {
                                 <h2 className="text-lg font-semibold">
                                     Ongoing Projects
                                 </h2>
-                                <button className="text-sm text-gray-500">
-                                    Sort
-                                </button>
                             </div>
                             {ongoingProjects && ongoingProjects.length > 0 ? (
                                 ongoingProjects.map((project, index) => (
@@ -132,7 +129,7 @@ function Jobs() {
                         </div>
 
                         {/* Recent Messages */}
-                        <div className="bg-white p-4 rounded-lg">
+                        {/* <div className="bg-white p-4 rounded-lg">
                             <h2 className="text-lg font-semibold mb-4">
                                 Recent Messages
                             </h2>
@@ -148,7 +145,7 @@ function Jobs() {
                                     No messages
                                 </h5>
                             )}
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </main>

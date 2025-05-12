@@ -49,7 +49,7 @@ export const cancelProject = createAsyncThunk(
   "projects/cancelProject",
   async (projectId, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/projects/${projectId}/cancel`);
+      const response = await axios.put(`/projects/${projectId}/cancel`);
       return response.data?.data; // Assuming the API returns the updated project
     } catch (err) {
       return rejectWithValue(

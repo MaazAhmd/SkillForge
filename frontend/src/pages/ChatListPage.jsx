@@ -9,7 +9,6 @@ const ChatListPage = () => {
   const { user }               = useSelector(state => state.auth);
   const { list: chats, status } = useSelector(state => state.chat);
   const [loading, setLoading]  = useState(true);
-  console.log(chats)
 
   useEffect(() => {
     dispatch(fetchChats()).finally(() => setLoading(false));

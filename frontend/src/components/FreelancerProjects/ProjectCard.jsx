@@ -45,7 +45,7 @@ function ProjectCard({ project }) {
     };
     return (
         <div
-            className="bg-white p-6 rounded-lg shadow-sm mb-2"
+            className="bg-white p-6 rounded-lg shadow-sm"
             style={{ hover: { Scale: "1.02" } }}
         >
             <div className="flex items-start justify-between mb-4">
@@ -127,6 +127,8 @@ function ProjectCard({ project }) {
                                 ? "opacity-50 pointer-events-none"
                                 : ""
                         }`}
+                        onClick={handleCancelProject}
+                        disabled={isActionDisabled("cancel")}
                     >
                         <FileText className="w-4 h-4" />
                         Cancel Project
